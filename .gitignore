@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.env
+data/reviews/*
+data/pulses/*
+.pytest_cache/
