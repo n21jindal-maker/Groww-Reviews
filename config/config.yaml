@@ -8,7 +8,7 @@ app:
   max_pulse_words: 250
 
 email:
-  to: "your-email@example.com"
+  to: "n21jindal@gmail.com"
   subject_prefix: "📊 Groww Weekly Pulse"
 
 # Phase 3 — Analysis chains (Groq)
@@ -39,4 +39,4 @@ storage:
 
 mcp:
   sse_url: "https://mcp-server-production-acc6.up.railway.app/mcp/sse"
-  document_id: "your-google-doc-id-here"
+  document_id: "1y7yonWaztIoHDIu5vzwLu4giOKpvnQXgRnL3FSlqX4w"
