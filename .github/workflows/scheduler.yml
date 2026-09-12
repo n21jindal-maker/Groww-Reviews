@@ -10,6 +10,8 @@ on:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -41,3 +43,16 @@ jobs:
 
       - name: Step 4 - Deliver via MCP
         run: python -m src.main --step deliver
+
+      - name: Commit and Push Updated Data
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          # Only commit if there are changes to avoid failing the workflow
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "chore: update weekly pulse data [skip ci]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
