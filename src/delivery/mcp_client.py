@@ -35,7 +35,7 @@ class MCPLangChainWrapper:
         for mcp_tool in result.tools:
             name = mcp_tool.name
             description = mcp_tool.description or ""
-            input_schema = mcp_tool.inputSchema
+            input_schema = mcp_tool.input_schema
             
             # Create a Pydantic model for the tool args based on JSON schema
             fields = {}

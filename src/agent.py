@@ -1,4 +1,6 @@
 import os
+import sys
+import io
 from typing import Dict, Any
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.prebuilt import create_react_agent
@@ -9,6 +11,8 @@ async def run_delivery_agent(pulse_md: str, config: Dict[str, Any]):
     Connects to the remote MCP server, gets delivery tools (Google Docs, Gmail),
     and executes the delivery tasks using an LLM agent.
     """
+    # Reconfigure stdout for UTF-8 so emoji in pulse don't crash on Windows
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     mcp_config = config.get("mcp", {})
     sse_url = mcp_config.get("sse_url")
     doc_id = mcp_config.get("document_id")
