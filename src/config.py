@@ -22,6 +22,19 @@ config = load_config()
 
 # Validate important environment variables
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+LLM_RPM_LIMIT = int(os.getenv("LLM_RPM_LIMIT", "5"))
+LLM_TPM_LIMIT = int(os.getenv("LLM_TPM_LIMIT", "250000"))
+
+# Attach to config object for easy access elsewhere
+config['GOOGLE_API_KEY'] = GOOGLE_API_KEY
+config['GROQ_API_KEY'] = GROQ_API_KEY
+config['LLM_RPM_LIMIT'] = LLM_RPM_LIMIT
+config['LLM_TPM_LIMIT'] = LLM_TPM_LIMIT
 if not GOOGLE_API_KEY or GOOGLE_API_KEY == "your_gemini_api_key_here":
     import warnings
     warnings.warn("GOOGLE_API_KEY is not set or still uses the default value. Please update your .env file.")
+
+if not GROQ_API_KEY or GROQ_API_KEY == "your_groq_api_key_here":
+    import warnings
+    warnings.warn("GROQ_API_KEY is not set or still uses the default value. Please update your .env file.")

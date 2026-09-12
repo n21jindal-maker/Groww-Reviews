@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document breaks the Groww Review Agent into **5 implementation phases**, each producing a working, testable increment. Every phase has clear goals, files to create/modify, acceptance criteria, and estimated effort.
+This document breaks the Groww Review Agent into **6 implementation phases**, each producing a working, testable increment. Every phase has clear goals, files to create/modify, acceptance criteria, and estimated effort.
 
 ```mermaid
 gantt
@@ -24,13 +24,16 @@ gantt
 
     section Phase 5
     MCP Delivery & Integration         :p5, after p4, 3d
+
+    section Phase 6
+    Automation & Scheduling            :p6, after p5, 1d
 ```
 
 ---
 
 ## Phase 1 — Project Setup & Scaffolding
 
-> **Goal:** Establish the project structure, install all dependencies, configure environment, and validate that LangChain + Gemini connectivity works.
+> **Goal:** Establish the project structure, install all dependencies, configure environment, and validate that LangChain + LLM (Gemini & Groq) connectivity works.
 
 ### Duration: ~2 days
 
@@ -42,7 +45,7 @@ gantt
 | 1.2 | Initialize Python project | `requirements.txt`, `.env.example`, `.gitignore` | Pin all dependencies from architecture §13 |
 | 1.3 | Create configuration loader | `src/config.py`, `config/config.yaml` | Load YAML config + `.env` environment variables using `pyyaml` + `python-dotenv` |
 | 1.4 | Define Pydantic data models | `src/models.py` | `Review`, `ThemeAssignment`, `ClusteringResult`, `PulseNote`, `ActionIdea` |
-| 1.5 | Validate LangChain + Gemini | `tests/test_llm_connection.py` | Simple "hello world" chain: `ChatPromptTemplate` → `ChatGoogleGenerativeAI` → `StrOutputParser` |
+| 1.5 | Validate LangChain + LLMs | `tests/test_llm_connection.py` | Simple "hello world" chains for both Gemini (`ChatGoogleGenerativeAI`) and Groq (`ChatGroq`) |
 | 1.6 | Set up `main.py` entry point | `src/main.py` | CLI arg parser (`--step`, `--dry-run`), placeholder calls for each pipeline stage |
 | 1.7 | Initialize Git repo | `.git`, `README.md` | Initial commit with project skeleton |
 
@@ -77,7 +80,7 @@ tests/test_llm_connection.py
 ### Key Decisions
 
 > [!IMPORTANT]
-> **Gemini API Key:** Must be set in `.env` as `GOOGLE_API_KEY`. Verify with the team which key to use (personal vs. shared project key).
+> **API Keys:** Must be set in `.env` as `GOOGLE_API_KEY` and `GROQ_API_KEY`. Verify with the team which keys to use.
 
 ---
 
@@ -140,24 +143,79 @@ flowchart LR
 
 ## Phase 3 — LangChain Analysis Chains
 
-> **Goal:** Build the three core LangChain LCEL chains — theme clustering, quote selection, and action idea generation — with structured outputs via Pydantic.
+> **Goal:** Build the three core LangChain LCEL chains — theme clustering, quote selection, and action idea generation — with structured outputs via Pydantic. All prompts and batching are designed around the **real Phase 2 dataset** (1,712 cleaned reviews, avg 25 words/review, ~56K tokens, date range Jul 03 – Sep 02, 2026).
 
 ### Duration: ~4 days
 
-### Dependencies: Phase 2 complete (need real reviews to test against)
+### Dependencies: Phase 2 complete (1,712 real reviews stored in [`data/reviews/2026-09-03.json`](file:///d:/Groww%20Review%20Agent/data/reviews/2026-09-03.json))
+
+### Real Data Profile
+
+| Metric | Value |
+|---|---|
+| **Total reviews** | 1,712 |
+| **Score distribution** | ★1: 668 (39.0%), ★2: 109 (6.4%), ★3: 130 (7.6%), ★4: 140 (8.2%), ★5: 665 (38.8%) |
+| **Sentiment split** | Negative (★1–2): 777 (45.4%) · Neutral (★3): 130 (7.6%) · Positive (★4–5): 805 (47.0%) |
+| **Date range** | Jul 03 – Sep 02, 2026 (~9 weeks, 62 unique dates) |
+| **Avg words/review** | 25 (min: 8, max: 129, median: 17) |
+| **Total tokens (est.)** | ~56,700 (exceeds single-pass — **batching required**) |
+| **Top app versions** | 18.13.2 (338), 18.12.1 (245), 18.15.1 (183), 18.14.2 (149), 18.14.1 (149) |
+| **Hinglish reviews** | ~74 (~4.3% of dataset) |
+
+### Observed Theme Patterns in Real Data
+
+From keyword analysis of the 1,712 reviews, these are the **recurring theme clusters** the LLM should discover:
+
+| Theme (expected) | Approx. matches | Example signals |
+|---|---|---|
+| **User-Friendly / Positive Praise** | ~296 | "simple to use", "beginner friendly", "clean interface", "easy to understand" |
+| **Customer Support Failures** | ~269 | "worst customer service", "no reply to email", "chat response delay", "no resolution even after 1 week" |
+| **Feature Requests (Chart/Trading Tools)** | ~237 | "Volume Candles", "trailing stoploss", "trade directly from charts", "OI profile on chart" |
+| **F&O / Options Trading Issues** | ~222 | "option chain lagging", "margin too high", "instant exit not working", "square-off timing issues" |
+| **App Performance (Lag/Crash/Glitches)** | ~180 | "app keeps crashing", "data doesn't update", "option chain starts lagging", "app has become too slow" |
+| **Mutual Fund / SIP Issues** | ~180 | "SIP returns negative", "MF cart payment issue", "no live NAV update", "international MF not searchable" |
+| **Brokerage / Charges Too High** | ~162 | "brokerage charges very high", "competitors offer zero brokerage", "equity delivery charges too" |
+| **Update Regression / UI Breakage** | ~149 | "recent update made it worse", "navigation button gone after update", "every week unnecessary update" |
+| **Chart / Scalper Button Issues** | ~126 (+37 scalper-specific) | "scalper option is irritating", "back button disappears in chart", "full screen chart issues" |
+| **KYC / Account Issues** | ~125 | "KYC pending for weeks", "unable to change email", "demat account closure no response" |
+| **Payment / Transaction Issues** | ~109 | "payment failed but debited", "UPI mandate issues", "withdraw amount held without reason" |
+| **IPO Related** | ~53 | "IPO mandate status not updating", "advance order for allotted IPO missing" |
+
+> [!NOTE]
+> The dataset contains **~74 Hinglish reviews** (~4.3%) — Hindi words in Latin script (e.g. "scalper button mobile ke back button me hi he"). The theme clustering prompt must instruct the LLM to understand Hinglish and cluster these alongside their English equivalents — do NOT ignore them as noise.
+
+> [!WARNING]
+> **The dataset is heavily polarized:** 39% are ★1 and 38.8% are ★5, with very few in between. The LLM must not over-index on either sentiment. The theme clustering prompt should instruct the model to identify themes across ALL star ratings — both pain points and praise — and rank by total volume, not just negative reviews.
 
 ### Tasks
 
 | # | Task | Files | Details |
 |---|---|---|---|
-| 3.1 | Define analysis prompt templates | `src/analysis/prompts.py` | Three `ChatPromptTemplate` definitions: (a) theme clustering, (b) quote selection, (c) action ideas. Include format instructions from output parsers. |
+| 3.1 | Define analysis prompt templates | `src/analysis/prompts.py` | Three `ChatPromptTemplate` definitions: (a) theme clustering, (b) quote selection, (c) action ideas. Include format instructions from output parsers. Prompts must explicitly handle **Hinglish** content. |
 | 3.2 | Configure output parsers | `src/analysis/parsers.py` | `PydanticOutputParser(pydantic_object=ClusteringResult)` for themes, `PydanticOutputParser` for actions, `StrOutputParser` for quotes. |
-| 3.3 | Build theme clustering chain | `src/analysis/chains.py` | `theme_chain = prompt | llm | parser`. Input: batch of review texts. Output: `ClusteringResult` (≤ 5 themes with review IDs and counts). |
-| 3.4 | Build quote selection chain | `src/analysis/chains.py` | `quote_chain = prompt | llm | parser`. Input: top 3 themes + their reviews. Output: 1 verbatim quote per theme (3 total). |
-| 3.5 | Build action idea chain | `src/analysis/chains.py` | `action_chain = prompt | llm | parser`. Input: top 3 themes + summary. Output: 3 concrete action ideas. |
+| 3.3 | Build theme clustering chain | `src/analysis/chains.py` | **Two-pass batching strategy** (see below). 1,712 reviews ≈ 56K tokens — too large for a single call under Groq's 8K TPM limit. Batch into groups of ~50 reviews → extract sub-themes per batch → merge in a final consolidation call. Output: `ClusteringResult` (≤ 5 themes with review IDs and counts). |
+| 3.4 | Build quote selection chain | `src/analysis/chains.py` | `quote_chain = prompt | llm | parser`. Input: top 3 themes + their review texts. Output: 1 verbatim quote per theme (3 total). Must select **English-language** quotes only for the final pulse. |
+| 3.5 | Build action idea chain | `src/analysis/chains.py` | `action_chain = prompt | llm | parser`. Input: top 3 themes + summary statistics (review count, score distribution, date range). Output: 3 concrete, Groww-specific action ideas. |
 | 3.6 | Add retry logic | `src/analysis/chains.py` | `.with_retry(stop_after_attempt=3)` on each chain. Add `OutputFixingParser` as fallback for parsing failures. |
-| 3.7 | Wire analysis into `main.py` | `src/main.py` | `--step analyze` triggers: load reviews → run theme_chain → run quote_chain → run action_chain → save results |
-| 3.8 | Write chain tests | `tests/test_chains.py` | Test with real reviews (integration) + mock LLM responses (unit). Verify Pydantic models parse correctly. |
+| 3.7 | Wire analysis into `main.py` | `src/main.py` | `--step analyze` triggers: load reviews → run theme_chain (batched) → run quote_chain → run action_chain → save results to `data/analysis/YYYY-MM-DD.json` |
+| 3.8 | Write chain tests | `tests/test_chains.py` | Test with **real reviews from Phase 2** (integration) + mock LLM responses (unit). Verify Pydantic models parse correctly. Include a test with Hinglish input. Test batching logic with >200 reviews. |
+
+### Batching Strategy
+
+```mermaid
+flowchart TD
+    A["1,712 Reviews"] --> B["Split into batches\n(~50 reviews each)"]
+    B --> C1["Batch 1 → theme_chain\n→ sub-themes"]
+    B --> C2["Batch 2 → theme_chain\n→ sub-themes"]
+    B --> C3["... Batch 9 → theme_chain\n→ sub-themes"]
+    C1 --> D["Consolidation LLM call:\nMerge all sub-themes\ninto ≤ 5 final themes"]
+    C2 --> D
+    C3 --> D
+    D --> E["ClusteringResult\n(≤ 5 themes, ranked by volume)"]
+```
+
+> [!TIP]
+> **Why two-pass?** 1,712 reviews × 25 avg words ≈ 56K tokens. Groq's `openai/gpt-oss-120b` has a strict 8K Tokens Per Minute (TPM) limit. Batching into groups of ~50 (using short sequential IDs) ensures we stay well within the TPM limit per request, while the consolidation step deduplicates similar themes across batches.
 
 ### Files Created/Modified
 
@@ -167,59 +225,111 @@ flowchart LR
 [NEW]  src/analysis/chains.py
 [MOD]  src/main.py
 [NEW]  tests/test_chains.py
+[NEW]  data/analysis/           (created at runtime)
 ```
 
 ### Chain Architecture (Phase 3)
 
 ```mermaid
 flowchart TD
-    subgraph theme_chain ["theme_chain (LCEL)"]
-        TP["ChatPromptTemplate\n(system: cluster these reviews)"]
-        TL["ChatGoogleGenerativeAI\n(gemini-2.5-flash)"]
+    subgraph theme_chain ["theme_chain (LCEL, batched)"]
+        TP["ChatPromptTemplate\n(system: cluster reviews,\nhandle Hinglish)"]
+        TL["ChatGroq\n(openai/gpt-oss-120b, temp=0.3)"]
         TPP["PydanticOutputParser\n(ClusteringResult)"]
         TP --> TL --> TPP
     end
 
+    subgraph consolidation ["consolidation_chain (LCEL)"]
+        CP["ChatPromptTemplate\n(system: merge sub-themes\ninto ≤ 5 final themes)"]
+        CL["ChatGroq"]
+        CPP["PydanticOutputParser\n(ClusteringResult)"]
+        CP --> CL --> CPP
+    end
+
     subgraph quote_chain ["quote_chain (LCEL)"]
-        QP["ChatPromptTemplate\n(system: select best quote)"]
-        QL["ChatGoogleGenerativeAI"]
+        QP["ChatPromptTemplate\n(system: select best English quote)"]
+        QL["ChatGroq"]
         QOP["StrOutputParser"]
         QP --> QL --> QOP
     end
 
     subgraph action_chain ["action_chain (LCEL)"]
-        AP["ChatPromptTemplate\n(system: suggest 3 actions)"]
-        AL["ChatGoogleGenerativeAI"]
+        AP["ChatPromptTemplate\n(system: 3 Groww-specific actions)"]
+        AL["ChatGroq"]
         APP["PydanticOutputParser\n(ActionIdeas)"]
         AP --> AL --> APP
     end
 
-    REVIEWS["Stored Reviews\n(data/reviews/)"] --> TP
-    TPP -->|"top 3 themes + reviews"| QP
-    TPP -->|"top 3 themes + summary"| AP
+    REVIEWS["1,712 Stored Reviews\n(data/reviews/2026-09-03.json)"] --> |"~50 per batch"| TP
+    TPP --> |"sub-themes per batch"| CP
+    CPP --> |"top 3 themes + reviews"| QP
+    CPP --> |"top 3 themes + stats"| AP
 ```
 
 ### Prompt Design Guidelines
 
 | Chain | System Prompt Key Points | Expected Output |
 |---|---|---|
-| **theme_chain** | "You are a product analyst. Group these mobile app reviews into at most 5 themes. Each theme needs a short label, the review IDs it contains, and a count." | `ClusteringResult` (Pydantic) |
-| **quote_chain** | "From the reviews in each theme below, select the single most representative verbatim quote. Do not modify the text. Do not include any PII." | 3 plain-text quotes |
-| **action_chain** | "Based on these user feedback themes, suggest 3 specific, actionable improvements the product team can implement. Be concrete, not generic." | `ActionIdeas` (Pydantic) |
+| **theme_chain** (per batch) | "You are a product analyst for Groww, an Indian stock trading & mutual fund app. Group these ~200 reviews into at most 8 sub-themes. Reviews may be in English or Hinglish (Hindi in Latin script) — understand both. Each theme needs a short label, the review IDs it contains, and a count." | `ClusteringResult` (Pydantic, ≤ 8 sub-themes) |
+| **consolidation_chain** | "You have sub-themes from multiple batches of Groww app reviews. Merge overlapping sub-themes into at most 5 final themes. Combine review ID lists. Rank by total review count descending." | `ClusteringResult` (Pydantic, ≤ 5 final themes) |
+| **quote_chain** | "From the reviews in each theme below, select the single most representative **English-language** verbatim quote. Do not modify the text. Prefer quotes that clearly articulate the user's pain point or praise with specific detail." | 3 plain-text quotes |
+| **action_chain** | "Based on these Groww user feedback themes from 1,712 reviews over 9 weeks (Jul–Sep 2026), suggest 3 specific, actionable improvements the product team can implement. Reference Groww features by name (e.g., Scalper mode, TradingView chart, option chain, F&O Lock). Be concrete, not generic." | `ActionIdeas` (Pydantic) |
+
+### Expected Output Example (based on real data)
+
+```
+Themes discovered (expected from 1,712 reviews):
+1. "Customer Support & Response Failures" (~269 reviews)
+   - No response to emails/calls, 15-20 min chat delays
+   - Account/email change requests unresolved for weeks
+2. "App Performance & Update Regression" (~329 reviews, merged)
+   - Navigation button gone after update, scalper button interferes with back
+   - Charts lagging, data not refreshing, option chain slow
+3. "Brokerage Charges & Fee Complaints" (~162 reviews)
+   - Equity delivery charges higher than competitors
+   - Users switching to zero-brokerage alternatives
+4. "F&O / Options Trading Pain Points" (~222 reviews)
+   - Instant exit not working, margin requirements too high
+   - Square-off timing discrepancies, slippage issues
+5. "Positive: User-Friendly Interface" (~296 reviews)
+   - Clean UI, beginner-friendly, simple navigation
+   - Good for long-term investing and mutual funds
+
+Sample verbatim quotes (from real reviews):
+• "worst experience... trying to reach the customer care...
+   no reply to email and didn't pick up the customer care call"
+• "data doesn't update after latest update.
+   i have to refresh every second to track prices"
+• "brokerage charges very high other apps brokerage charges 0"
+
+Sample action ideas:
+1. Implement SLA-tracked customer support queue with estimated
+   response time and ticket status visible in-app
+2. Restore chart navigation button, add user-configurable scalper
+   mode position, fix real-time price feed WebSocket
+3. Introduce competitive brokerage tiers or loyalty discounts
+   for high-volume equity delivery traders
+```
 
 ### Acceptance Criteria
 
-- [ ] `python -m src.main --step analyze` runs successfully on real ingested reviews
-- [ ] Theme clustering produces ≤ 5 themes, each with a clear label
+- [ ] `python -m src.main --step analyze` runs successfully on all 1,712 real reviews
+- [ ] Batching correctly splits reviews into ~200-review groups and consolidates sub-themes
+- [ ] Theme clustering produces ≤ 5 final themes, each with a clear label
 - [ ] Top 3 themes are correctly ranked by volume (descending)
-- [ ] 3 verbatim quotes returned — none invented, all traceable to real reviews
-- [ ] 3 action ideas returned — specific to Groww, not generic advice
+- [ ] Hinglish reviews (~74) are clustered alongside English reviews into correct themes (not dropped or mis-classified)
+- [ ] 3 verbatim quotes returned — none invented, all traceable to real review IDs in the data store
+- [ ] 3 action ideas returned — reference Groww-specific features (Scalper mode, option chain, F&O Lock, etc.)
 - [ ] Pydantic parsing succeeds consistently (>90% of runs without `OutputFixingParser` fallback)
-- [ ] Retry logic handles transient Gemini API errors gracefully
+- [ ] Retry logic handles transient Groq API errors gracefully
+- [ ] Analysis results saved to `data/analysis/YYYY-MM-DD.json`
 - [ ] `pytest tests/test_chains.py` passes
 
+> [!IMPORTANT]
+> **Hinglish handling is critical.** ~74 reviews (4.3%) are Hinglish (e.g. "scalper button mobile ke back button me hi he"). The theme clustering prompt must explicitly instruct the LLM to understand Hindi written in Latin script and merge these with English reviews about the same topic. Test with known Hinglish reviews to verify.
+
 > [!TIP]
-> **Prompt iteration is expected.** Budget time for 3–5 rounds of prompt refinement per chain. Test with diverse review batches (positive-heavy, negative-heavy, mixed).
+> **Rate limits & execution time:** Groq `openai/gpt-oss-120b` has limits of 30 Requests Per Minute (RPM), 8K Tokens Per Minute (TPM), 1K Requests Per Day (RPD), and 200K Tokens Per Day (TPD). The batching strategy (50 reviews/batch with short IDs) + 10s inter-call sleep ensures we stay below the 8K TPM constraint.
 
 ---
 
@@ -236,7 +346,7 @@ flowchart TD
 | # | Task | Files | Details |
 |---|---|---|---|
 | 4.1 | Create pulse template | `templates/pulse_template.md` | Markdown template with placeholders for date, themes (with counts), quotes (with ratings), and action ideas |
-| 4.2 | Build pulse builder chain | `src/generation/pulse_builder.py` | LangChain chain that takes structured analysis output and produces the final pulse note. Enforce ≤ 250 words via prompt instruction. Output both Markdown and plain-text variants. |
+| 4.2 | Build pulse builder chain | `src/generation/pulse_builder.py` | LangChain chain that takes structured analysis output and produces the final pulse note. Enforce ≤ 250 words via prompt instruction. Output both Markdown and plain-text variants. Use Gemini model `gemini-3.6-flash` for this phase. |
 | 4.3 | Add word count validation | `src/generation/pulse_builder.py` | Post-generation check: if pulse > 250 words, re-prompt LLM to condense. Log warning if still over limit. |
 | 4.4 | Add pulse archiving | `src/storage/store.py` | `save_pulse(pulse, date)` → writes to `data/pulses/YYYY-MM-DD.md`. Keep history of all generated pulses. |
 | 4.5 | Wire generation into `main.py` | `src/main.py` | Full pipeline now works: ingest → analyze → generate. `--dry-run` prints pulse to console without delivery. |
@@ -290,36 +400,29 @@ flowchart TD
 
 ## Phase 5 — MCP Delivery & End-to-End Integration
 
-> **Goal:** Publish the pulse to Google Docs and create a Gmail draft — both via MCP servers wrapped as LangChain tools. Wire the complete end-to-end pipeline.
+> **Goal:** Publish the pulse to Google Docs and create a Gmail draft via a remote MCP server using SSE. Wire the complete end-to-end pipeline.
 
 ### Duration: ~3 days
 
-### Dependencies: Phase 4 complete + MCP servers configured
+### Dependencies: Phase 4 complete + MCP server deployed
 
 ### Tasks
 
 | # | Task | Files | Details |
 |---|---|---|---|
-| 5.1 | Configure MCP servers | `config/mcp_servers.json` | Set up Google Docs and Gmail MCP server connection configs per architecture §8.1 |
-| 5.2 | Build MCP tool wrappers | `src/delivery/mcp_tools.py` | Wrap MCP tools as LangChain `Tool` objects: `docs_tool` and `gmail_tool` (per architecture §8.3) |
-| 5.3 | Build Docs publisher | `src/delivery/docs_publisher.py` | `publish_pulse(pulse_md, title) → doc_url`. Creates a new Google Doc (or updates existing). Returns the document URL. |
-| 5.4 | Build Gmail drafter | `src/delivery/gmail_drafter.py` | `draft_pulse_email(to, subject, body, doc_url) → draft_id`. Creates a Gmail draft with the pulse content and a link to the Doc. |
-| 5.5 | Build LangChain agent | `src/agent.py` | `AgentExecutor` with `docs_tool` + `gmail_tool`. Receives the generated pulse and autonomously publishes + drafts. |
-| 5.6 | Wire full pipeline in `main.py` | `src/main.py` | `python -m src.main` runs: ingest → analyze → generate → deliver (Docs + Gmail). `--step deliver` runs only the delivery stage. |
-| 5.7 | Add delivery fallback | `src/delivery/docs_publisher.py`, `src/delivery/gmail_drafter.py` | If MCP fails: save pulse locally, log error, print instructions for manual delivery. |
-| 5.8 | Write integration tests | `tests/test_agent.py` | Mock MCP server responses. Test full pipeline flow with sample data. Verify Doc URL and draft ID are returned. |
-| 5.9 | End-to-end smoke test | Manual | Run full pipeline against real reviews → verify Google Doc created → verify Gmail draft exists |
+| 5.1 | Configure MCP server | `config/config.yaml` | Add the remote SSE URL for the deployed Railway MCP server and a target Google Doc ID. |
+| 5.2 | Build MCP Client | `src/delivery/mcp_client.py` | Connect to the remote SSE server using `mcp.client.sse.sse_client`. Dynamically convert exposed MCP tools into LangChain `StructuredTool` objects. |
+| 5.3 | Build Delivery Agent | `src/agent.py` | Create a LangChain agent using the fetched MCP tools (`google_docs_append`, `gmail_draft_email`). Agent reads the pulse, appends it to Docs, and creates a Gmail draft with a link to the Doc. |
+| 5.4 | Wire full pipeline in `main.py` | `src/main.py` | Add `--step deliver` command. Wrap agent invocation with `asyncio.run` since the MCP client is async. |
+| 5.5 | End-to-end smoke test | Manual | Run full pipeline against real reviews → verify Google Doc updated → verify Gmail draft exists |
 
 ### Files Created/Modified
 
 ```
-[NEW]  config/mcp_servers.json
-[NEW]  src/delivery/mcp_tools.py
-[NEW]  src/delivery/docs_publisher.py
-[NEW]  src/delivery/gmail_drafter.py
+[MOD]  config/config.yaml
+[NEW]  src/delivery/mcp_client.py
 [NEW]  src/agent.py
 [MOD]  src/main.py
-[NEW]  tests/test_agent.py
 ```
 
 ### End-to-End Flow (Phase 5)
@@ -328,55 +431,70 @@ flowchart TD
 sequenceDiagram
     participant User as Developer
     participant Main as main.py
-    participant Scraper as scraper.py
     participant Store as store.py
-    participant Chains as chains.py
-    participant Builder as pulse_builder.py
     participant Agent as agent.py
-    participant Docs as Google Docs MCP
-    participant Gmail as Gmail MCP
+    participant MCPClient as mcp_client.py
+    participant MCPServer as Remote SSE MCP Server
 
-    User->>Main: python -m src.main
-    Main->>Scraper: fetch_reviews()
-    Scraper-->>Main: raw_reviews
-    Main->>Main: preprocess (PII strip, normalize, dedup)
-    Main->>Store: save_reviews(clean_reviews)
-    Main->>Store: load_reviews(this_week)
-    Store-->>Main: reviews
-    Main->>Chains: theme_chain.invoke(reviews)
-    Chains-->>Main: ClusteringResult (≤5 themes)
-    Main->>Chains: quote_chain.invoke(top_3_themes)
-    Chains-->>Main: 3 quotes
-    Main->>Chains: action_chain.invoke(top_3_themes)
-    Chains-->>Main: 3 action ideas
-    Main->>Builder: build_pulse(themes, quotes, actions)
-    Builder-->>Main: pulse_md + pulse_text
-    Main->>Store: save_pulse(pulse_md)
-    Main->>Agent: executor.invoke(pulse_md)
-    Agent->>Docs: docs_tool → create_document(title, pulse_md)
-    Docs-->>Agent: doc_url
-    Agent->>Gmail: gmail_tool → create_draft(to, subject, body + doc_url)
-    Gmail-->>Agent: draft_id
-    Agent-->>Main: ✅ {doc_url, draft_id}
-    Main-->>User: Done! Doc: {url}, Draft: {id}
+    User->>Main: python -m src.main --step deliver
+    Main->>Store: load_pulse()
+    Store-->>Main: pulse_md
+    Main->>Agent: run_delivery_agent(pulse_md)
+    Agent->>MCPClient: get_mcp_tools()
+    MCPClient->>MCPServer: connect(SSE)
+    MCPServer-->>MCPClient: list_tools()
+    MCPClient-->>Agent: [google_docs_append, gmail_draft_email]
+    Agent->>MCPServer: call_tool(google_docs_append, doc_id, pulse_md)
+    MCPServer-->>Agent: success
+    Agent->>MCPServer: call_tool(gmail_draft_email, to, subject, body+url)
+    MCPServer-->>Agent: success
+    Agent-->>Main: ✅ Done
+    Main-->>User: Done!
 ```
 
 ### Acceptance Criteria
 
-- [ ] `python -m src.main` runs the complete pipeline end-to-end without errors
-- [ ] A Google Doc is created with the correct pulse content and title
-- [ ] A Gmail draft is created containing the pulse and a link to the Google Doc
-- [ ] `--dry-run` skips MCP delivery and prints pulse to console
-- [ ] `--step deliver` re-publishes the latest saved pulse without re-ingesting or re-analyzing
-- [ ] MCP failures are handled gracefully — pulse is saved locally as fallback
-- [ ] `pytest tests/test_agent.py` passes with mock MCP responses
-- [ ] No PII present in the final Google Doc or Gmail draft
+- [ ] `python -m src.main --step deliver` connects to the remote MCP server using SSE.
+- [ ] The agent appends the pulse to the configured Google Doc.
+- [ ] The agent creates a Gmail draft containing the pulse and a link to the Google Doc.
+- [ ] MCP failures are handled gracefully — error is logged.
 
 > [!WARNING]
 > **MCP Server Setup Required:** Before starting Phase 5, ensure:
-> 1. Google OAuth credentials are configured at `config/google-credentials.json`
-> 2. MCP servers for Docs and Gmail are installed and accessible
-> 3. The target email address is set in `config/config.yaml`
+> 1. The remote MCP Server at `https://mcp-server-production-acc6.up.railway.app` is reachable.
+> 2. The Google Doc ID is configured in `config.yaml`.
+> 3. The target email address is set in `config/config.yaml`.
+
+---
+
+## Phase 6 — Automation & Scheduling
+
+> **Goal:** Run the full agent pipeline on a weekly schedule using GitHub Actions. The scheduler will automatically ingest reviews, analyze them, generate the pulse, and deliver it via MCP.
+
+### Duration: ~1 day
+
+### Dependencies: Phase 5 complete, Repository pushed to GitHub
+
+### Tasks
+
+| # | Task | Files | Details |
+|---|---|---|---|
+| 6.1 | Create GitHub Workflow | `.github/workflows/scheduler.yml` | Set up a `schedule` trigger (e.g., `cron: '0 9 * * 1'` for every Monday at 9 AM). Add a `workflow_dispatch` trigger for manual runs. |
+| 6.2 | Define CI/CD Steps | `.github/workflows/scheduler.yml` | Checkout code, setup Python, install dependencies, run pipeline. |
+| 6.3 | Configure Secrets | GitHub Repository Settings | Map `GOOGLE_API_KEY`, `GROQ_API_KEY` to GitHub Action Secrets. Provide necessary config overrides. |
+
+### Files Created/Modified
+
+```
+[NEW]  .github/workflows/scheduler.yml
+```
+
+### Acceptance Criteria
+
+- [ ] GitHub Action `.github/workflows/scheduler.yml` is present in the repository.
+- [ ] Workflow contains a `schedule` cron trigger for weekly execution.
+- [ ] Workflow correctly installs dependencies and runs the agent.
+- [ ] Required secrets and environment variables are documented.
 
 ---
 
@@ -388,22 +506,25 @@ flowchart LR
     P2 --> P3["Phase 3\nLangChain\nAnalysis Chains\n(4 days)"]
     P3 --> P4["Phase 4\nPulse\nGeneration\n(2 days)"]
     P4 --> P5["Phase 5\nMCP Delivery &\nIntegration\n(3 days)"]
+    P5 --> P6["Phase 6\nAutomation &\nScheduling\n(1 day)"]
 
     style P1 fill:#1e3a5f,stroke:#4a90d9,color:#fff
     style P2 fill:#1e3a5f,stroke:#4a90d9,color:#fff
     style P3 fill:#1e3a5f,stroke:#4a90d9,color:#fff
     style P4 fill:#1e3a5f,stroke:#4a90d9,color:#fff
     style P5 fill:#1e3a5f,stroke:#4a90d9,color:#fff
+    style P6 fill:#1e3a5f,stroke:#4a90d9,color:#fff
 ```
 
 | Phase | Duration | Key Deliverable | Runnable Command |
 |---|---|---|---|
-| **Phase 1** | ~2 days | Project skeleton + Gemini connectivity | `pytest tests/test_llm_connection.py` |
+| **Phase 1** | ~2 days | Project skeleton + LLM connectivity | `pytest tests/test_llm_connection.py` |
 | **Phase 2** | ~3 days | Reviews ingested and stored | `python -m src.main --step ingest` |
 | **Phase 3** | ~4 days | Themes, quotes, actions from real reviews | `python -m src.main --step analyze` |
 | **Phase 4** | ~2 days | Polished pulse note (≤ 250 words) | `python -m src.main --dry-run` |
-| **Phase 5** | ~3 days | Full pipeline with Docs + Gmail delivery | `python -m src.main` |
-| **Total** | **~14 days** | | |
+| **Phase 5** | ~3 days | Full pipeline with Docs + Gmail delivery | `python -m src.main --step deliver` |
+| **Phase 6** | ~1 day | Automated weekly schedule via GitHub Actions | N/A |
+| **Total** | **~15 days** | | |
 
 ---
 
@@ -411,7 +532,7 @@ flowchart LR
 
 | Risk | Impact | Likelihood | Mitigation |
 |---|---|---|---|
-| Gemini API rate limits during batch clustering | High | Medium | Chunk reviews into batches of 50. Add `.with_retry()`. Cache results. |
+| Groq API rate limits during batch clustering | High | Medium | Chunk reviews into batches of 50, use short IDs. Add 10s sleep between calls to respect 8K TPM. |
 | `google-play-scraper` breaks due to Play Store changes | High | Low | Pin version. Add fallback to manual CSV import. Monitor for library updates. |
 | LLM produces inconsistent theme labels across runs | Medium | High | Seed with predefined theme categories in prompt. Use low temperature (0.3). |
 | MCP server authentication issues | High | Medium | Test OAuth flow early in Phase 5. Document manual credential setup steps. |
@@ -432,3 +553,4 @@ The project is **complete** when ALL of the following are true:
 - [ ] All tests pass: `pytest tests/`
 - [ ] The project is documented with README.md setup instructions
 - [ ] Code is committed to Git with clean history
+- [ ] GitHub Action scheduler is configured to run weekly

@@ -4,3 +4,5 @@ __pycache__/
 data/reviews/*
 data/pulses/*
 .pytest_cache/
+scratch/
+data/analysis/*

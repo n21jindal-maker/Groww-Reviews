@@ -42,7 +42,7 @@ graph TB
     end
 
     subgraph Analysis ["3 · Analysis Layer (LangChain Chains)"]
-        TC[Theme Clusterer<br/>ChatGoogleGenerativeAI +<br/>StructuredOutputParser]
+        TC[Theme Clusterer<br/>ChatGroq (openai/gpt-oss-120b) +<br/>StructuredOutputParser]
         QS[Quote Selector<br/>LLMChain]
         AI[Action Idea Generator<br/>LLMChain]
         TC --> QS
@@ -50,7 +50,7 @@ graph TB
     end
 
     subgraph Generation ["4 · Generation Layer"]
-        PG[Pulse Note Builder<br/>PromptTemplate + LLM]
+        PG[Pulse Note Builder<br/>PromptTemplate + Gemini LLM (gemini-3.6-flash)]
     end
 
     subgraph Delivery ["5 · Delivery Layer (LangChain Tools)"]
@@ -113,14 +113,14 @@ Each analysis component is implemented as a **LangChain chain** using LCEL (Lang
 
 | Component | Responsibility | LangChain Pattern |
 |---|---|---|
-| **Theme Clusterer** | Group all reviews into **≤ 5 themes**. Assign each review a theme label. | `ChatPromptTemplate` → `ChatGoogleGenerativeAI` → `PydanticOutputParser` |
-| **Quote Selector** | From each of the top 3 themes, pick **1 verbatim quote** that best represents the sentiment. Strip any remaining PII. | `ChatPromptTemplate` → `ChatGoogleGenerativeAI` → `StrOutputParser` |
-| **Action Idea Generator** | Produce **3 concrete, actionable next-steps** grounded in the top themes. | `ChatPromptTemplate` → `ChatGoogleGenerativeAI` → `PydanticOutputParser` |
+| **Theme Clusterer** | Group all reviews into **≤ 5 themes**. Assign each review a theme label. | `ChatPromptTemplate` → `ChatGroq` → `PydanticOutputParser` |
+| **Quote Selector** | From each of the top 3 themes, pick **1 verbatim quote** that best represents the sentiment. Strip any remaining PII. | `ChatPromptTemplate` → `ChatGroq` → `StrOutputParser` |
+| **Action Idea Generator** | Produce **3 concrete, actionable next-steps** grounded in the top themes. | `ChatPromptTemplate` → `ChatGroq` → `PydanticOutputParser` |
 
 **LangChain Chain Example — Theme Clustering:**
 
 ```python
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
@@ -143,7 +143,7 @@ prompt = ChatPromptTemplate.from_messages([
     ("human", "{reviews}")
 ]).partial(format_instructions=parser.get_format_instructions())
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
+llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0.3)
 
 theme_chain = prompt | llm | parser  # LCEL composition
 ```
@@ -173,7 +173,7 @@ Two approaches (choose one):
 
 | Component | Responsibility | LangChain Pattern |
 |---|---|---|
-| **Pulse Note Builder** | Compile the top 3 themes, 3 quotes, and 3 action ideas into a structured ≤ 250-word document. Output both Markdown (for Docs) and plain-text (for email body). | `ChatPromptTemplate` (with Jinja2-style template) → `ChatGoogleGenerativeAI` → `StrOutputParser` |
+| **Pulse Note Builder** | Compile the top 3 themes, 3 quotes, and 3 action ideas into a structured ≤ 250-word document. Output both Markdown (for Docs) and plain-text (for email body). | `ChatPromptTemplate` (with Jinja2-style template) → `ChatGoogleGenerativeAI` (gemini-3.6-flash) → `StrOutputParser` |
 
 **Pulse Template Structure:**
 
@@ -228,7 +228,7 @@ LangChain is the orchestration framework that ties together the LLM calls, struc
 
 | Project Need | LangChain Capability | Benefit |
 |---|---|---|
-| Call Gemini for clustering, quotes, actions | `ChatGoogleGenerativeAI` (LLM wrapper) | Swap models without changing pipeline code |
+| Call LLMs for clustering, quotes, actions | `ChatGroq` and `ChatGoogleGenerativeAI` | Swap models without changing pipeline code |
 | Parse LLM output into typed Python objects | `PydanticOutputParser` / `JsonOutputParser` | Type-safe structured outputs, no manual JSON parsing |
 | Compose multi-step analysis pipeline | **LCEL** (LangChain Expression Language) | `prompt \| llm \| parser` — readable, testable chains |
 | Manage complex prompts with variables | `ChatPromptTemplate` | Reusable, version-controlled prompt templates |
@@ -240,24 +240,24 @@ LangChain is the orchestration framework that ties together the LLM calls, struc
 ```mermaid
 flowchart LR
     subgraph LangChain ["LangChain Framework"]
-        PT["ChatPromptTemplate"] --> LLM["ChatGoogleGenerativeAI\n(Gemini 2.5 Flash)"]
+        PT["ChatPromptTemplate"] --> LLM["ChatGroq / ChatGoogleGenerativeAI"]
         LLM --> OP["OutputParser\n(Pydantic / Str)"]
         OP --> TOOL["Tool Agent\n(MCP Docs + Gmail)"]
     end
 
     subgraph External ["External Services"]
-        GEMINI["Gemini API"]
+        LLM_API["Groq / Gemini APIs"]
         DOCS_MCP["Google Docs MCP"]
         GMAIL_MCP["Gmail MCP"]
     end
 
-    LLM -->|API call| GEMINI
+    LLM -->|API call| LLM_API
     TOOL -->|tool call| DOCS_MCP
     TOOL -->|tool call| GMAIL_MCP
 ```
 
 > [!NOTE]
-> LangChain's `langchain-google-genai` package provides first-class Gemini support. The `ChatGoogleGenerativeAI` class supports function calling, structured outputs, multimodal inputs, and streaming — all used by this agent.
+> LangChain's integration packages (`langchain-groq` and `langchain-google-genai`) provide first-class support for both platforms. We use Groq for high-throughput batch processing of reviews (Phase 3) and Gemini for high-quality final pulse generation (Phase 4).
 
 ---
 
@@ -266,8 +266,8 @@ flowchart LR
 | Layer | Technology | Purpose |
 |---|---|---|
 | **Language** | Python 3.11+ | Core pipeline |
-| **Agent Framework** | LangChain (`langchain`, `langchain-core`, `langchain-google-genai`) | Chain orchestration, prompt templates, output parsing, tool agents |
-| **LLM** | Google Gemini API via `ChatGoogleGenerativeAI` | Theme clustering, quote selection, action generation, pulse writing |
+| **Agent Framework** | LangChain (`langchain`, `langchain-core`, `langchain-google-genai`, `langchain-groq`) | Chain orchestration, prompt templates, output parsing, tool agents |
+| **LLMs** | Groq (`openai/gpt-oss-120b`) & Gemini (`gemini-3.6-flash`) | Theme clustering, quote selection, action generation (Groq); pulse writing (Gemini) |
 | **Review Fetching** | `google-play-scraper` | Public Play Store review extraction |
 | **Data Storage** | JSON files (MVP) / SQLite (scale) | Persist reviews and pulse history |
 | **Structured Output** | Pydantic v2 + LangChain `PydanticOutputParser` | Type-safe LLM response parsing |
@@ -356,11 +356,11 @@ flowchart TD
 
     subgraph ANALYZE ["3 · Analyze (LangChain Chains)"]
         LOAD["Load this week's reviews"]
-        CLUSTER["theme_chain\n(Prompt → Gemini → PydanticParser)"]
+        CLUSTER["theme_chain\n(Prompt → Groq → PydanticParser)"]
         RANK["Rank themes by volume"]
         TOP3["Select top 3 themes"]
-        QUOTES["quote_chain\n(Prompt → Gemini → StrParser)"]
-        ACTIONS["action_chain\n(Prompt → Gemini → PydanticParser)"]
+        QUOTES["quote_chain\n(Prompt → Groq → StrParser)"]
+        ACTIONS["action_chain\n(Prompt → Groq → PydanticParser)"]
         LOAD --> CLUSTER --> RANK --> TOP3
         TOP3 --> QUOTES
         TOP3 --> ACTIONS
@@ -481,7 +481,7 @@ from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
 from delivery.mcp_tools import docs_tool, gmail_tool
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
+llm = ChatGoogleGenerativeAI(model="gemini-3.6-flash", temperature=0.3)
 tools = [docs_tool, gmail_tool]
 
 prompt = ChatPromptTemplate.from_messages([
@@ -554,8 +554,8 @@ email:
   subject_prefix: "📊 Groww Weekly Pulse"
 
 langchain:
-  llm_provider: "google-genai"        # langchain-google-genai
-  model: "gemini-2.5-flash"
+  groq_model: "openai/gpt-oss-120b"
+  gemini_model: "gemini-3.6-flash"
   temperature: 0.3
   max_retries: 3
   langsmith_tracing: false             # Set true for observability
@@ -587,6 +587,7 @@ storage:
 langchain>=0.3
 langchain-core>=0.3
 langchain-google-genai>=2.0
+langchain-groq>=0.2
 google-play-scraper>=1.2
 pydantic>=2.0
 mcp>=1.0

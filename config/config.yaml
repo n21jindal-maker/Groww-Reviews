@@ -1,3 +1,4 @@
+
 app:
   name: "Groww Review Agent"
   play_store_app_id: "com.nextbillion.groww"
@@ -10,15 +11,32 @@ email:
   to: "your-email@example.com"
   subject_prefix: "📊 Groww Weekly Pulse"
 
-langchain:
-  llm_provider: "google-genai"        # langchain-google-genai
-  model: "gemini-2.5-flash"
+# Phase 3 — Analysis chains (Groq)
+groq:
+  model: "openai/gpt-oss-120b"
   temperature: 0.3
-  max_retries: 3
-  langsmith_tracing: false             # Set true for observability
+  max_retries: 2
+  rpm_limit: 30           # requests per minute
+  tpm_limit: 8000         # tokens per minute (binding constraint)
+  rpd_limit: 1000         # requests per day
+  tpd_limit: 200000       # tokens per day
+
+# Phase 4 — Pulse builder (Gemini)
+gemini:
+  model: "gemini-3.6-flash"
+  temperature: 0.3
+  max_retries: 2
+
+langchain:
+  max_retries: 2
+  langsmith_tracing: false
   langsmith_project: "groww-review-agent"
 
 storage:
-  type: "json"             # "json" or "sqlite"
+  type: "json"
   reviews_dir: "data/reviews"
   pulses_dir: "data/pulses"
+
+mcp:
+  sse_url: "https://mcp-server-production-acc6.up.railway.app/mcp/sse"
+  document_id: "your-google-doc-id-here"

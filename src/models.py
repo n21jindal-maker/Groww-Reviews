@@ -1,12 +1,12 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 
 class Review(BaseModel):
     reviewId: str
     score: int = Field(ge=1, le=5)
     text: str
     at: str
-    appVersion: str = None
+    appVersion: Optional[str] = None
 
 class ThemeAssignment(BaseModel):
     theme_name: str = Field(description="A short, descriptive label for this theme")
