@@ -1,8 +1,7 @@
 import os
 from typing import Dict, Any
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain_core.prompts import ChatPromptTemplate
+from langgraph.prebuilt import create_react_agent
 from src.delivery.mcp_client import MCPLangChainWrapper
 
 async def run_delivery_agent(pulse_md: str, config: Dict[str, Any]):
@@ -39,10 +38,8 @@ async def run_delivery_agent(pulse_md: str, config: Dict[str, Any]):
             temperature=0.1
         )
         
-        from langchain_core.prompts import MessagesPlaceholder
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an autonomous delivery agent. Your job is to publish a Weekly Pulse report using the provided tools."),
-            ("user", """
+        prompt_text = f"""You are an autonomous delivery agent. Your job is to publish a Weekly Pulse report using the provided tools.
+
 Please deliver the following Weekly Pulse report.
 
 Task 1: Append the report to the Google Document with ID: {doc_id}
@@ -50,24 +47,20 @@ Task 2: Create a draft email to {to_email} with the subject "{subject}".
 The body of the email should contain the pulse report AND a link to the Google Doc: https://docs.google.com/document/d/{doc_id}/edit
 
 Report Content:
-{pulse}
-"""),
-            MessagesPlaceholder(variable_name="agent_scratchpad")
-        ])
+{pulse_md}
+"""
         
-        agent = create_tool_calling_agent(llm, tools, prompt)
-        agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+        agent_executor = create_react_agent(llm, tools)
         
         print("Starting delivery agent...")
         result = await agent_executor.ainvoke({
-            "doc_id": doc_id,
-            "to_email": to_email,
-            "subject": subject,
-            "pulse": pulse_md
+            "messages": [("user", prompt_text)]
         })
         
         print("\nDelivery complete!")
-        print(result.get("output", ""))
+        last_message = result.get("messages", [])[-1] if "messages" in result else None
+        if last_message:
+            print(last_message.content)
         
     except Exception as e:
         print(f"Delivery failed: {e}")
