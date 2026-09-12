@@ -1,7 +1,7 @@
 {
   "themes": [
     {
-      "theme_name": "Overall Satisfaction & Positive Feedback",
+      "theme_name": "Positive Feedback & Feature Praise",
       "review_ids": [
         "66f13eaf-a195-4b2c-9978-ba729a4defe4",
         "8ec7e5d5-5047-465a-9f54-56ceb9d6df0b",
@@ -12,7 +12,6 @@
         "0af2f1a2-47fb-4011-aa41-cfb4e9a6277a",
         "57b99c65-70e9-4007-8beb-74c588a08a66",
         "12b68b8a-fbb3-4e63-8a3e-48889042f61d",
-        "5cf0cbcf-766c-425b-8023-aa5500445c86",
         "e8c28b6f-40cb-49a9-9498-689b43073468",
         "b8b49a26-ecfa-4343-865d-da4bf58d20b8",
         "392671b7-4388-42e6-a22b-079eb81b602e",
@@ -44,96 +43,152 @@
         "a334f84d-0bfc-4e97-b332-690a94e39636",
         "c6c4d64a-c6a9-4120-960d-7428aef3f24a",
         "75a6b11c-2bae-4efa-84b6-b70c1076236a",
-        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
+        "5cf0cbcf-766c-425b-8023-aa5500445c86",
         "804f38f0-18d0-4262-8b70-0d31f77cc94c",
+        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
         "e71495d8-3751-4997-b010-8d524789f7f4",
         "7495dcf0-6ded-41f8-9443-ef748b368a7d",
         "c3afeffd-727c-40ba-8f48-7cb2d0628b64",
         "38e82da5-4f0b-491d-99a7-8add68d853b0",
         "5d5bce12-5617-4acc-ac1d-ec7b8a4a8173",
+        "fe752e07-7aa1-437d-9b9d-1e091ea0df44",
+        "df4fb01c-9b45-4394-a698-8dab39f3bd86",
         "6f452236-59f1-4df3-b5db-a694b4066d4e",
         "e1c0ffba-faf8-4591-a4b2-2447c3e1a141",
         "31995ff4-583f-4f68-a077-2ddcf5298767",
         "2180e01b-b177-4e2f-965e-736840b00f1c",
+        "442534b8-1e5f-4982-b59d-8d107ad0e550",
         "dc6e6a75-7faf-4b36-8f81-56a27f16d0b1",
         "5f16eeac-e348-421c-8567-d90117037992",
         "351ec39d-e091-42d9-9071-e25588501505",
-        "18039c40-c0ce-4c9a-ac10-2b8fbbffe928"
+        "4ab9ea78-8843-449b-9c86-8759e904aea4",
+        "15d67894-d92f-40c7-b674-8a0fb85e4bf9",
+        "49bf4a7f-0c78-44c4-a6c4-131ee7aa098f",
+        "8b21936e-a186-49c4-a68e-7249bcdeff27",
+        "99251835-4913-4e4f-a0a1-32e49f6ddcb3",
+        "4089d4f1-0f75-4162-be9f-15fdadb7cf5e",
+        "4bbc67f8-66d4-4ac3-860b-dd5bcd06b9d3",
+        "0058e71c-3f38-4c74-a93e-96ad8daf30d0",
+        "609f4c92-42b2-4eae-ae2d-a179634561fb",
+        "3b03f3b5-1fe0-4587-84ba-fd82bea40354",
+        "357f1126-787b-41aa-b618-5637f2e88423",
+        "02f6ec79-05c2-495d-9920-810563ef030b",
+        "49f9a719-7a35-48b6-9e41-402e462754cd",
+        "fde46a62-706f-4394-bb96-1ceaea69768e",
+        "e93111c6-11ce-42a1-ba2e-ceb092d7df4e",
+        "6e403d63-8a26-4ba3-a042-93ddc0415265",
+        "18039c40-c0ce-4c9a-ac10-2b8fbbffe928",
+        "69e470cf-fc2a-40d6-a1b5-0d68a5fbaa08",
+        "61ea59fd-c8f1-4603-a530-1932b67538a9",
+        "740cc804-f0bd-4a8a-83a4-35dc61049ced",
+        "1b7f934d-041d-4027-b27e-4143d83003ad",
+        "7acedd6c-2526-4466-9998-b7683b17c3f8",
+        "59a60892-b446-42f8-95cd-c442b33557b0",
+        "000c1374-7c25-474c-9932-f0f90ea9901a",
+        "b2b6ea4e-566b-410e-ac3b-d4bb79765195"
       ],
-      "count": 49
+      "count": 67
     },
     {
       "theme_name": "Technical Issues & Bugs",
       "review_ids": [
         "75a6b11c-2bae-4efa-84b6-b70c1076236a",
-        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
+        "5cf0cbcf-766c-425b-8023-aa5500445c86",
         "804f38f0-18d0-4262-8b70-0d31f77cc94c",
+        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
         "e71495d8-3751-4997-b010-8d524789f7f4",
         "7495dcf0-6ded-41f8-9443-ef748b368a7d",
         "c3afeffd-727c-40ba-8f48-7cb2d0628b64",
         "38e82da5-4f0b-491d-99a7-8add68d853b0",
         "5d5bce12-5617-4acc-ac1d-ec7b8a4a8173",
-        "18039c40-c0ce-4c9a-ac10-2b8fbbffe928",
-        "1b7f934d-041d-4027-b27e-4143d83003ad"
+        "1b7f934d-041d-4027-b27e-4143d83003ad",
+        "7acedd6c-2526-4466-9998-b7683b17c3f8",
+        "59a60892-b446-42f8-95cd-c442b33557b0",
+        "000c1374-7c25-474c-9932-f0f90ea9901a",
+        "b2b6ea4e-566b-410e-ac3b-d4bb79765195"
+      ],
+      "count": 6
+    },
+    {
+      "theme_name": "Customer Service & Support Concerns",
+      "review_ids": [
+        "75a6b11c-2bae-4efa-84b6-b70c1076236a",
+        "5cf0cbcf-766c-425b-8023-aa5500445c86",
+        "804f38f0-18d0-4262-8b70-0d31f77cc94c",
+        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
+        "e71495d8-3751-4997-b010-8d524789f7f4",
+        "7495dcf0-6ded-41f8-9443-ef748b368a7d",
+        "c3afeffd-727c-40ba-8f48-7cb2d0628b64",
+        "38e82da5-4f0b-491d-99a7-8add68d853b0",
+        "5d5bce12-5617-4acc-ac1d-ec7b8a4a8173",
+        "fe752e07-7aa1-437d-9b9d-1e091ea0df44",
+        "df4fb01c-9b45-4394-a698-8dab39f3bd86",
+        "1b7f934d-041d-4027-b27e-4143d83003ad",
+        "7acedd6c-2526-4466-9998-b7683b17c3f8",
+        "59a60892-b446-42f8-95cd-c442b33557b0",
+        "000c1374-7c25-474c-9932-f0f90ea9901a",
+        "b2b6ea4e-566b-410e-ac3b-d4bb79765195"
       ],
       "count": 4
     },
     {
-      "theme_name": "Usability & Interface",
+      "theme_name": "User Experience & Ease of Use",
       "review_ids": [
         "75a6b11c-2bae-4efa-84b6-b70c1076236a",
-        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
+        "5cf0cbcf-766c-425b-8023-aa5500445c86",
         "804f38f0-18d0-4262-8b70-0d31f77cc94c",
+        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
         "e71495d8-3751-4997-b010-8d524789f7f4",
         "7495dcf0-6ded-41f8-9443-ef748b368a7d",
         "c3afeffd-727c-40ba-8f48-7cb2d0628b64",
         "38e82da5-4f0b-491d-99a7-8add68d853b0",
         "5d5bce12-5617-4acc-ac1d-ec7b8a4a8173",
-        "18039c40-c0ce-4c9a-ac10-2b8fbbffe928"
+        "1b7f934d-041d-4027-b27e-4143d83003ad",
+        "7acedd6c-2526-4466-9998-b7683b17c3f8",
+        "59a60892-b446-42f8-95cd-c442b33557b0",
+        "000c1374-7c25-474c-9932-f0f90ea9901a",
+        "b2b6ea4e-566b-410e-ac3b-d4bb79765195"
       ],
-      "count": 3
+      "count": 4
     },
     {
       "theme_name": "Charges & Fees Concerns",
       "review_ids": [
         "75a6b11c-2bae-4efa-84b6-b70c1076236a",
-        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
+        "5cf0cbcf-766c-425b-8023-aa5500445c86",
         "804f38f0-18d0-4262-8b70-0d31f77cc94c",
+        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
         "e71495d8-3751-4997-b010-8d524789f7f4",
         "7495dcf0-6ded-41f8-9443-ef748b368a7d",
         "c3afeffd-727c-40ba-8f48-7cb2d0628b64",
         "38e82da5-4f0b-491d-99a7-8add68d853b0",
         "5d5bce12-5617-4acc-ac1d-ec7b8a4a8173",
-        "18039c40-c0ce-4c9a-ac10-2b8fbbffe928"
-      ],
-      "count": 2
-    },
-    {
-      "theme_name": "Customer Service Experience",
-      "review_ids": [
-        "fe752e07-7aa1-437d-9b9d-1e091ea0df44",
-        "df4fb01c-9b45-4394-a698-8dab39f3bd86"
+        "1b7f934d-041d-4027-b27e-4143d83003ad",
+        "7acedd6c-2526-4466-9998-b7683b17c3f8",
+        "59a60892-b446-42f8-95cd-c442b33557b0",
+        "000c1374-7c25-474c-9932-f0f90ea9901a",
+        "b2b6ea4e-566b-410e-ac3b-d4bb79765195"
       ],
       "count": 2
     }
   ],
   "quotes": [
-    "i am using shiprocket quick for my regular local orders and the experience has been positive so far. the app is easy to understand and delivery progress can be checked quickly. i also find it useful when customers ask about...",
+    "excellent",
     "very buggy app every time it gets stuck when i go to the ipo option please fix it asap or else your groww share price will be more down",
-    "very good app interface"
+    "i am so happy ...thank you so much customer care support....groww application good 😊 thank you so much best demate account alltime ⭐⭐⭐⭐⭐⭐ 6 star ✨"
   ],
   "actions": [
     {
-      "theme_name": "Overall Satisfaction & Positive Feedback",
-      "action": "Introduce a 'Groww Rewards' loyalty program that grants bonus SIP credits and fee waivers for users who regularly engage with features like Scalper mode and F&O Lock, reinforcing positive sentiment."
+      "theme_name": "Positive Feedback & Feature Praise",
+      "action": "Create an in-app showcase and tutorial series highlighting high‑praise features such as Scalper mode, TradingView chart, and SIP to boost user engagement and reinforce strengths."
     },
     {
       "theme_name": "Technical Issues & Bugs",
-      "action": "Deploy a dedicated monitoring dashboard for the TradingView chart and option chain modules to detect latency spikes and crashes in real-time, and release a hotfix within 48 hours of any reported bug."
+      "action": "Deploy a dedicated QA sprint to resolve recurring bugs in the option chain and F&O Lock modules, and integrate real‑time crash analytics to proactively detect and fix stability issues."
     },
     {
-      "theme_name": "Usability & Interface",
-      "action": "Redesign the main navigation to include a one‑tap shortcut bar for high‑frequency tools such as Scalper mode, SIP setup, and the option chain, accompanied by contextual tooltips to streamline the user journey."
+      "theme_name": "Customer Service & Support Concerns",
+      "action": "Launch a 24/7 in‑app live chat with a tiered support system, including specialized agents for F&O and SIP queries, and add a ticket‑tracking dashboard for transparent resolution updates."
     }
   ]
 }
