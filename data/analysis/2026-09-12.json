@@ -1,0 +1,139 @@
+{
+  "themes": [
+    {
+      "theme_name": "Overall Satisfaction & Positive Feedback",
+      "review_ids": [
+        "66f13eaf-a195-4b2c-9978-ba729a4defe4",
+        "8ec7e5d5-5047-465a-9f54-56ceb9d6df0b",
+        "84924c8e-0350-4eec-9045-f5e269ff0d4f",
+        "8c227dcf-c63c-4de7-b0d6-58170ab9856b",
+        "84483f4d-945b-421f-8d33-f5068dece9d4",
+        "9413a8c8-3a01-4d1e-ad8d-08313fa1800e",
+        "0af2f1a2-47fb-4011-aa41-cfb4e9a6277a",
+        "57b99c65-70e9-4007-8beb-74c588a08a66",
+        "12b68b8a-fbb3-4e63-8a3e-48889042f61d",
+        "5cf0cbcf-766c-425b-8023-aa5500445c86",
+        "e8c28b6f-40cb-49a9-9498-689b43073468",
+        "b8b49a26-ecfa-4343-865d-da4bf58d20b8",
+        "392671b7-4388-42e6-a22b-079eb81b602e",
+        "62fcb126-5152-4d5c-8731-c9610881a8b8",
+        "2da3ec53-da9b-4736-b2f6-84d842c1d2ed",
+        "f4d7bfea-db53-4b55-833a-1ace94d96ffa",
+        "62d5faca-a18e-462d-889d-aa73c0b24131",
+        "f15b5136-5e15-4eb9-b778-83300f5a69c6",
+        "2543446c-3491-4de2-98f6-2d082dbd0b0b",
+        "1e7ccb0f-6666-4aae-9fe4-faf164677712",
+        "b5fadbe8-ca73-4577-a447-a6a641c91ae1",
+        "f590fa68-6e36-40a7-a4df-22eaa7a63cb1",
+        "0b704c7f-a9ba-4142-b013-dcdc82a20f34",
+        "9f19a1ce-d2e4-4d56-9fde-03a485b55bdc",
+        "9a5285ff-376d-48eb-b065-1b92b8e1a0f5",
+        "35c91771-06dd-46f9-a2eb-33eb74d01dd1",
+        "562b42d3-9f99-473f-80a2-4d5547c30cff",
+        "197d90f3-1e78-4011-8f1e-729001fd6794",
+        "cebe530d-0b38-43eb-8153-2169bdeb0e96",
+        "bc9cdfca-cf22-4450-9a4d-794e538287d7",
+        "24dcaf8b-e2b7-42a1-8a1b-bf0ca5b3f211",
+        "2e1d688f-bead-4db2-bb6e-8f6012ad72c5",
+        "51c2da08-1936-4ff5-a9d3-e6457ff3d5b2",
+        "4d0399fe-b55d-423a-a27b-2ba7d7c8edfd",
+        "78b7d93f-cb17-48f1-b10e-d191d036c9cf",
+        "5bbf1d65-ed21-4245-8ab3-30f9bd9a71ff",
+        "9b2b4b08-9193-494d-baea-d0f86096a3b3",
+        "24894449-5a49-4489-a008-03fa96c7dc1b",
+        "a334f84d-0bfc-4e97-b332-690a94e39636",
+        "c6c4d64a-c6a9-4120-960d-7428aef3f24a",
+        "75a6b11c-2bae-4efa-84b6-b70c1076236a",
+        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
+        "804f38f0-18d0-4262-8b70-0d31f77cc94c",
+        "e71495d8-3751-4997-b010-8d524789f7f4",
+        "7495dcf0-6ded-41f8-9443-ef748b368a7d",
+        "c3afeffd-727c-40ba-8f48-7cb2d0628b64",
+        "38e82da5-4f0b-491d-99a7-8add68d853b0",
+        "5d5bce12-5617-4acc-ac1d-ec7b8a4a8173",
+        "6f452236-59f1-4df3-b5db-a694b4066d4e",
+        "e1c0ffba-faf8-4591-a4b2-2447c3e1a141",
+        "31995ff4-583f-4f68-a077-2ddcf5298767",
+        "2180e01b-b177-4e2f-965e-736840b00f1c",
+        "dc6e6a75-7faf-4b36-8f81-56a27f16d0b1",
+        "5f16eeac-e348-421c-8567-d90117037992",
+        "351ec39d-e091-42d9-9071-e25588501505",
+        "18039c40-c0ce-4c9a-ac10-2b8fbbffe928"
+      ],
+      "count": 49
+    },
+    {
+      "theme_name": "Technical Issues & Bugs",
+      "review_ids": [
+        "75a6b11c-2bae-4efa-84b6-b70c1076236a",
+        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
+        "804f38f0-18d0-4262-8b70-0d31f77cc94c",
+        "e71495d8-3751-4997-b010-8d524789f7f4",
+        "7495dcf0-6ded-41f8-9443-ef748b368a7d",
+        "c3afeffd-727c-40ba-8f48-7cb2d0628b64",
+        "38e82da5-4f0b-491d-99a7-8add68d853b0",
+        "5d5bce12-5617-4acc-ac1d-ec7b8a4a8173",
+        "18039c40-c0ce-4c9a-ac10-2b8fbbffe928",
+        "1b7f934d-041d-4027-b27e-4143d83003ad"
+      ],
+      "count": 4
+    },
+    {
+      "theme_name": "Usability & Interface",
+      "review_ids": [
+        "75a6b11c-2bae-4efa-84b6-b70c1076236a",
+        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
+        "804f38f0-18d0-4262-8b70-0d31f77cc94c",
+        "e71495d8-3751-4997-b010-8d524789f7f4",
+        "7495dcf0-6ded-41f8-9443-ef748b368a7d",
+        "c3afeffd-727c-40ba-8f48-7cb2d0628b64",
+        "38e82da5-4f0b-491d-99a7-8add68d853b0",
+        "5d5bce12-5617-4acc-ac1d-ec7b8a4a8173",
+        "18039c40-c0ce-4c9a-ac10-2b8fbbffe928"
+      ],
+      "count": 3
+    },
+    {
+      "theme_name": "Charges & Fees Concerns",
+      "review_ids": [
+        "75a6b11c-2bae-4efa-84b6-b70c1076236a",
+        "6ece33f4-2456-4c63-bc8b-0ed19ef2c7c0",
+        "804f38f0-18d0-4262-8b70-0d31f77cc94c",
+        "e71495d8-3751-4997-b010-8d524789f7f4",
+        "7495dcf0-6ded-41f8-9443-ef748b368a7d",
+        "c3afeffd-727c-40ba-8f48-7cb2d0628b64",
+        "38e82da5-4f0b-491d-99a7-8add68d853b0",
+        "5d5bce12-5617-4acc-ac1d-ec7b8a4a8173",
+        "18039c40-c0ce-4c9a-ac10-2b8fbbffe928"
+      ],
+      "count": 2
+    },
+    {
+      "theme_name": "Customer Service Experience",
+      "review_ids": [
+        "fe752e07-7aa1-437d-9b9d-1e091ea0df44",
+        "df4fb01c-9b45-4394-a698-8dab39f3bd86"
+      ],
+      "count": 2
+    }
+  ],
+  "quotes": [
+    "i am using shiprocket quick for my regular local orders and the experience has been positive so far. the app is easy to understand and delivery progress can be checked quickly. i also find it useful when customers ask about...",
+    "very buggy app every time it gets stuck when i go to the ipo option please fix it asap or else your groww share price will be more down",
+    "very good app interface"
+  ],
+  "actions": [
+    {
+      "theme_name": "Overall Satisfaction & Positive Feedback",
+      "action": "Introduce a 'Groww Rewards' loyalty program that grants bonus SIP credits and fee waivers for users who regularly engage with features like Scalper mode and F&O Lock, reinforcing positive sentiment."
+    },
+    {
+      "theme_name": "Technical Issues & Bugs",
+      "action": "Deploy a dedicated monitoring dashboard for the TradingView chart and option chain modules to detect latency spikes and crashes in real-time, and release a hotfix within 48 hours of any reported bug."
+    },
+    {
+      "theme_name": "Usability & Interface",
+      "action": "Redesign the main navigation to include a one‑tap shortcut bar for high‑frequency tools such as Scalper mode, SIP setup, and the option chain, accompanied by contextual tooltips to streamline the user journey."
+    }
+  ]
+}
