@@ -1,9 +1,11 @@
 import datetime
+import time
 from typing import List, Tuple
 from pathlib import Path
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai.chat_models import GoogleAPIError
 from src.models import ClusteringResult, ActionIdea
 from src.config import config
 
@@ -33,6 +35,32 @@ def _get_llm():
         google_api_key=config.get("GOOGLE_API_KEY", None),
         max_retries=config["gemini"]["max_retries"],
     )
+
+def _invoke_with_retry(chain, inputs: dict, max_attempts: int = 5, initial_delay: float = 10.0) -> str:
+    """Invoke a LangChain chain with exponential backoff on transient API errors (e.g. 503)."""
+    delay = initial_delay
+    last_exc = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return chain.invoke(inputs)
+        except GoogleAPIError as e:
+            last_exc = e
+            if attempt < max_attempts:
+                print(f"Warning: Gemini API error on attempt {attempt}/{max_attempts}: {e}. Retrying in {delay:.0f}s...")
+                time.sleep(delay)
+                delay *= 2
+            else:
+                print(f"Error: Gemini API call failed after {max_attempts} attempts.")
+        except Exception as e:
+            last_exc = e
+            if attempt < max_attempts:
+                print(f"Warning: Unexpected error on attempt {attempt}/{max_attempts}: {e}. Retrying in {delay:.0f}s...")
+                time.sleep(delay)
+                delay *= 2
+            else:
+                print(f"Error: Chain invocation failed after {max_attempts} attempts.")
+    raise last_exc
+
 
 def _load_template() -> str:
     template_path = Path(__file__).resolve().parent.parent.parent / "templates" / "pulse_template.md"
@@ -64,14 +92,14 @@ def build_pulse(themes: ClusteringResult, quotes: List[str], actions: List[Actio
     llm = _get_llm()
     chain = PULSE_BUILDER_PROMPT | llm | StrOutputParser()
     
-    pulse_md = chain.invoke({"raw_pulse": raw_pulse})
+    pulse_md = _invoke_with_retry(chain, {"raw_pulse": raw_pulse})
     
     # 3. Word count validation and condense loop
     word_count = len(pulse_md.split())
     if word_count > 250:
         print(f"Warning: Pulse is {word_count} words. Condensing...")
         condense_chain = CONDENSE_PROMPT | llm | StrOutputParser()
-        pulse_md = condense_chain.invoke({"pulse_text": pulse_md})
+        pulse_md = _invoke_with_retry(condense_chain, {"pulse_text": pulse_md})
         
         new_word_count = len(pulse_md.split())
         if new_word_count > 250:
