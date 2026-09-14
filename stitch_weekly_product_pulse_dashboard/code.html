@@ -1,0 +1,287 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>WeeklyProductPulse — Groww</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Custom Font Import (Playfair / Merriweather serif feel to match screenshots) -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+            sans: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          colors: {
+            appbg: '#f6f5f0',
+            cardbg: '#ffffff',
+            badgegreen: '#dcfce7',
+            badgetext: '#15803d',
+            terracotta: {
+              DEFAULT: '#b86b52',
+              hover: '#a25b44',
+              light: '#f7eeea',
+            },
+            sand: {
+              50: '#fbfaf8',
+              100: '#f5f4ef',
+              150: '#eceae3',
+              200: '#e5e3dc',
+              300: '#d5d2c7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Utility Styles -->
+<style data-purpose="typography">
+    .editorial-heading {
+      font-family: 'Newsreader', Georgia, serif;
+      letter-spacing: -0.015em;
+    }
+    .quote-box {
+      background-color: #f1efea;
+      border-left: 2px solid #b86b52;
+    }
+  </style>
+</head>
+<body class="bg-appbg text-neutral-800 font-sans antialiased min-h-screen selection:bg-orange-100 selection:text-neutral-900 pb-20">
+<!-- BEGIN: NavigationBar -->
+<header class="w-full max-w-4xl mx-auto pt-6 px-4 sm:px-6 flex items-center justify-between" data-purpose="top-navigation">
+<!-- Brand Logo and Name -->
+<div class="flex items-center space-x-2.5">
+<div class="w-7 h-7 rounded-md overflow-hidden flex items-center justify-center shrink-0">
+<svg class="w-full h-full" height="28" viewBox="0 0 80 80" width="28" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#00D09C" height="80" rx="18" width="80"></rect>
+<circle cx="40" cy="40" fill="#ffffff" opacity="0.25" r="16"></circle>
+<path d="M26 48 L37 36 L45 42 L55 28" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"></path>
+<polyline fill="none" points="47,28 55,28 55,36" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"></polyline>
+</svg>
+</div>
+<span class="font-semibold tracking-tight text-neutral-900 text-sm sm:text-base">Groww</span>
+</div>
+<!-- Subdued Product Pulse Title -->
+<span class="text-xs sm:text-sm font-medium text-neutral-500 tracking-normal">Product Pulse</span>
+</header>
+<!-- END: NavigationBar -->
+<!-- BEGIN: ReportControlsSection -->
+<section class="w-full max-w-4xl mx-auto mt-6 px-4 sm:px-6" data-purpose="report-controls">
+<!-- Period Label -->
+<label class="block text-[11px] font-semibold tracking-wider text-neutral-400 uppercase mb-1.5">PERIOD</label>
+<!-- Controls Selector Bar -->
+<div class="flex flex-wrap items-center gap-3">
+<!-- Period Select Dropdown -->
+<div class="relative inline-block text-left">
+<select class="appearance-none bg-white border border-neutral-200/90 rounded-xl px-4 py-2 pr-10 text-xs sm:text-sm font-medium text-neutral-800 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-400 focus:border-neutral-400 cursor-pointer">
+<option>Mar 23 – 29, 2026</option>
+<option>Mar 16 – 22, 2026</option>
+<option>Mar 09 – 15, 2026</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-neutral-400">
+<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+<path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"></path>
+</svg>
+</div>
+</div>
+<!-- Refresh Button -->
+<button class="inline-flex items-center gap-1.5 bg-white border border-neutral-200/90 hover:bg-neutral-50 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 shadow-sm transition" type="button">
+<svg class="w-3.5 h-3.5 text-neutral-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">Refresh</span>
+</button>
+</div>
+<!-- Viewing Metadata & Status Badge -->
+<div class="flex items-center gap-2.5 mt-5">
+<span class="text-[11px] font-semibold tracking-wider text-neutral-400 uppercase">VIEWING</span>
+<span class="text-xs sm:text-sm font-semibold text-neutral-800">Mar 23 – 29, 2026</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#e7f6ee] text-[#197a48] tracking-wide ml-1 uppercase">
+        REPORT READY
+      </span>
+</div>
+</section>
+<!-- END: ReportControlsSection -->
+<!-- BEGIN: MainReportDocument -->
+<main class="w-full max-w-4xl mx-auto mt-5 px-4 sm:px-6">
+<div class="bg-white rounded-3xl p-6 sm:p-10 md:p-14 border border-neutral-200/70 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.03)] space-y-12">
+<!-- Report Header -->
+<div>
+<h1 class="editorial-heading text-2xl sm:text-3xl md:text-4xl text-neutral-900 font-normal flex items-center gap-2.5">
+<span aria-label="Bar Chart" class="text-xl sm:text-2xl" role="img">📊</span>
+<span class="">WeeklyProductPulse — Groww</span>
+</h1>
+<p class="text-xs sm:text-sm text-neutral-500 mt-2 font-normal">
+          Week 2026-W13 | March 23–March 29, 2026
+        </p>
+</div>
+<!-- BEGIN: SectionOverview -->
+<section data-purpose="overview-section">
+<h2 class="editorial-heading text-xl sm:text-2xl text-neutral-900 font-normal italic flex items-center gap-2 mb-3">
+<span aria-label="Trend" class="text-base sm:text-lg not-italic" role="img">📈</span>
+<span class="">Overview</span>
+</h2>
+<p class="text-sm sm:text-base leading-relaxed text-neutral-700 font-normal">
+          Users are generally satisfied with the app, giving an average rating of 4.4★, with many praising its UI and overall experience, but some requesting additional features.
+        </p>
+</section>
+<!-- END: SectionOverview -->
+<!-- BEGIN: SectionTopThemes -->
+<section class="space-y-6" data-purpose="top-themes-section">
+<h2 class="editorial-heading text-xl sm:text-2xl text-neutral-900 font-normal italic flex items-center gap-2">
+<span aria-label="Search" class="text-base sm:text-lg not-italic" role="img">🔍</span>
+<span class="">Top Themes</span>
+</h2>
+<!-- Theme 1 -->
+<article class="space-y-3" data-purpose="theme-card-1">
+<div class="bg-sand-100 rounded-2xl p-4 sm:p-5 border border-neutral-200/60">
+<!-- Theme Header -->
+<div class="flex items-center gap-2.5 mb-2.5">
+<span class="w-5 h-5 rounded-full bg-[#00D09C] text-white flex items-center justify-center text-[11px] font-bold shrink-0">1</span>
+<h3 class="text-sm sm:text-base font-bold text-neutral-900">Feature Request</h3>
+</div>
+<!-- Theme Metadata Pills -->
+<div class="flex flex-wrap items-center gap-3 text-xs text-neutral-600 font-medium pl-7">
+<span class=""><strong>55</strong> reviews</span>
+<span class=""><strong>14.5%</strong> share</span>
+<span class="text-neutral-800">★3.67 avg</span>
+</div>
+</div>
+<!-- Nested Quote Box -->
+<div class="quote-box rounded-xl px-4 py-3 text-xs sm:text-sm italic text-neutral-700">
+            "Debt to Equity Ratio is missing"
+          </div>
+<!-- Detailed Summary -->
+<p class="text-xs sm:text-sm leading-relaxed text-neutral-700 pl-1">
+            The 'Feature Request' theme, accounting for 14.5% of reviews, highlights users' desire for more functionality, such as the Debt to Equity Ratio, with an average rating of 3.67★, indicating room for improvement.
+          </p>
+</article>
+<!-- Theme 2 -->
+<article class="space-y-3 pt-2" data-purpose="theme-card-2">
+<div class="bg-sand-100 rounded-2xl p-4 sm:p-5 border border-neutral-200/60">
+<!-- Theme Header -->
+<div class="flex items-center gap-2.5 mb-2.5">
+<span class="w-5 h-5 rounded-full bg-[#00D09C] text-white flex items-center justify-center text-[11px] font-bold shrink-0">2</span>
+<h3 class="text-sm sm:text-base font-bold text-neutral-900">Great App</h3>
+</div>
+<!-- Theme Metadata Pills -->
+<div class="flex flex-wrap items-center gap-3 text-xs text-neutral-600 font-medium pl-7">
+<span class=""><strong>49</strong> reviews</span>
+<span class=""><strong>12.9%</strong> share</span>
+<span class="text-neutral-800">★4.86 avg</span>
+</div>
+</div>
+<!-- Nested Quote Box -->
+<div class="quote-box rounded-xl px-4 py-3 text-xs sm:text-sm italic text-neutral-700">
+            "I love the app"
+          </div>
+<!-- Detailed Summary -->
+<p class="text-xs sm:text-sm leading-relaxed text-neutral-700 pl-1">
+            The 'Great App' theme, making up 12.9% of reviews, showcases users' enthusiasm for the app, with positive sentiment and an average rating of 4.86★, demonstrating strong user satisfaction.
+          </p>
+</article>
+<!-- Theme 3 -->
+<article class="space-y-3 pt-2" data-purpose="theme-card-3">
+<div class="bg-sand-100 rounded-2xl p-4 sm:p-5 border border-neutral-200/60">
+<!-- Theme Header -->
+<div class="flex items-center gap-2.5 mb-2.5">
+<span class="w-5 h-5 rounded-full bg-[#00D09C] text-white flex items-center justify-center text-[11px] font-bold shrink-0">3</span>
+<h3 class="text-sm sm:text-base font-bold text-neutral-900">Great UI</h3>
+</div>
+<!-- Theme Metadata Pills -->
+<div class="flex flex-wrap items-center gap-3 text-xs text-neutral-600 font-medium pl-7">
+<span class=""><strong>38</strong> reviews</span>
+<span class=""><strong>10.0%</strong> share</span>
+<span class="text-neutral-800">★4.87 avg</span>
+</div>
+</div>
+<!-- Nested Quote Box -->
+<div class="quote-box rounded-xl px-4 py-3 text-xs sm:text-sm italic text-neutral-700">
+            "UI is great and easy to navigate"
+          </div>
+<!-- Detailed Summary -->
+<p class="text-xs sm:text-sm leading-relaxed text-neutral-700 pl-1">
+            The 'Great Ui' theme, comprising 10.0% of reviews, emphasizes the app's user-friendly interface, with all reviews being positive and an average rating of 4.87★, underscoring the importance of a well-designed UI.
+          </p>
+</article>
+</section>
+<!-- END: SectionTopThemes -->
+<!-- BEGIN: SectionActionIdeas -->
+<section class="space-y-4" data-purpose="action-ideas-section">
+<h2 class="editorial-heading text-xl sm:text-2xl text-neutral-900 font-normal italic flex items-center gap-2">
+<span aria-label="Idea" class="text-base sm:text-lg not-italic" role="img">💡</span>
+<span class="">Action Ideas</span>
+</h2>
+<div class="space-y-3 pt-1">
+<!-- Action Idea 1 -->
+<div class="bg-sand-50 rounded-2xl p-4 sm:p-5 border border-neutral-200/60 flex items-start gap-3">
+<span class="text-[#00D09C] font-bold text-xs sm:text-sm mt-0.5">1</span>
+<div class="text-xs sm:text-sm leading-relaxed text-neutral-700">
+<span class="font-bold text-neutral-900">[Feature Request] — Add Debt to Equity Ratio</span>
+<span class="text-neutral-700">: Develop and integrate the Debt to Equity Ratio feature into the app within the next two sprints to address user requests and improve overall satisfaction. Rationale: This feature is explicitly requested by users, and its addition can increase user engagement and retention.</span>
+</div>
+</div>
+<!-- Action Idea 2 -->
+<div class="bg-sand-50 rounded-2xl p-4 sm:p-5 border border-neutral-200/60 flex items-start gap-3">
+<span class="text-[#00D09C] font-bold text-xs sm:text-sm mt-0.5">2</span>
+<div class="text-xs sm:text-sm leading-relaxed text-neutral-700">
+<span class="font-bold text-neutral-900">[Great App] — Enhance Onboarding Process</span>
+<span class="text-neutral-700">: Refine the onboarding process to ensure new users can easily discover and utilize the app's features, further enhancing their overall experience. Rationale: A streamlined onboarding process can convert positive first impressions into long-term user loyalty.</span>
+</div>
+</div>
+<!-- Action Idea 3 -->
+<div class="bg-sand-50 rounded-2xl p-4 sm:p-5 border border-neutral-200/60 flex items-start gap-3">
+<span class="text-[#00D09C] font-bold text-xs sm:text-sm mt-0.5">3</span>
+<div class="text-xs sm:text-sm leading-relaxed text-neutral-700">
+<span class="font-bold text-neutral-900">[Great Ui] — Continuously Refine UI Based on User Feedback</span>
+<span class="text-neutral-700">: Establish a regular review process to incorporate user feedback on the UI, making iterative improvements to maintain and enhance user satisfaction. Rationale: Continuously refining the UI based on user input ensures the app remains intuitive and appealing, supporting its competitive edge.</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SectionActionIdeas -->
+<!-- BEGIN: SectionFeeContext -->
+
+<!-- END: SectionFeeContext -->
+<!-- BEGIN: SectionShareReport -->
+<section class="space-y-4 pt-4 border-t border-neutral-150" data-purpose="share-section">
+<div>
+<h2 class="editorial-heading text-xl sm:text-2xl text-neutral-900 font-normal italic">
+            Share
+          </h2>
+<p class="text-xs sm:text-sm text-neutral-600 mt-1">
+            Deliver the full pulse by email — same rich formatting as on this page.
+          </p>
+</div>
+<!-- Share Input Box Container -->
+<div class="bg-sand-100 rounded-2xl p-5 sm:p-6 border border-neutral-200/60 space-y-4">
+<div>
+<label class="block text-xs font-semibold text-neutral-800 mb-1.5" for="email-recipients">
+              Email addresses
+            </label>
+<input class="w-full bg-white rounded-xl border border-neutral-300/80 px-3.5 py-2.5 text-xs sm:text-sm text-neutral-800 placeholder-neutral-400 shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-400 focus:border-neutral-400 transition" id="email-recipients" name="email" placeholder="name@company.com" type="email">
+</div>
+<div>
+<button class="bg-[#00D09C] hover:bg-[#00b386] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-sm inline-flex items-center justify-center" type="button">Send report</button>
+</div>
+</div>
+</section>
+<!-- END: SectionShareReport -->
+</div>
+</main>
+<!-- END: MainReportDocument -->
+<!-- BEGIN: MinimalFooter -->
+<footer class="w-full max-w-4xl mx-auto mt-6 text-center" data-purpose="report-footer">
+<p class="text-[11px] text-neutral-400 font-normal">
+      WeeklyProductPulse — Groww Customer Voice
+    </p>
+</footer>
+<!-- END: MinimalFooter -->
+
+
+</body></html>
