@@ -13,11 +13,12 @@
 5. **Continuous Integration**: Link the GitHub repository to the Railway project to enable automatic deployments on pushes to the `main` branch.
 
 ## Frontend Deployment (Vercel)
-1. **Repository Setup**: Ensure the frontend code (e.g., Next.js) is pushed to GitHub.
-2. **Project Creation**: Import the repository into Vercel.
-3. **Environment Variables**: Add necessary environment variables, primarily the backend API URL (e.g., `NEXT_PUBLIC_API_URL`) pointing to the deployed Railway backend URL.
-4. **Build Settings**: Vercel generally auto-detects frameworks (like Next.js), but verify the build command and output directory.
-5. **Continuous Integration**: Vercel will automatically build and deploy new commits pushed to the target branch.
+1. **Repository Setup**: Ensure the frontend code (e.g., Next.js) is pushed to GitHub. ✅ Code updated to use REST API.
+2. **Project Creation**: Import the `stitch_weekly_product_pulse_dashboard/` subdirectory into Vercel (set the **Root Directory** to `stitch_weekly_product_pulse_dashboard`).
+3. **Environment Variables**: Add the following in Vercel project settings:
+   - `NEXT_PUBLIC_API_URL` → Railway backend URL (e.g. `https://groww-review-agent-production.up.railway.app`)
+4. **Build Settings**: Vercel auto-detects Next.js. A `vercel.json` is in place. ✅
+5. **Continuous Integration**: Vercel will automatically build and deploy on pushes to `main`.
 
 ## Pre-Deployment Checklist
 - [ ] Configure CORS on the backend to allow requests from the Vercel frontend domain.
