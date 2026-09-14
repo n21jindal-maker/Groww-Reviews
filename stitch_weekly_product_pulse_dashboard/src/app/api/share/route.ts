@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import util from 'util';
-import path from 'path';
 
-const execPromise = util.promisify(exec);
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 export async function POST(request: Request) {
   try {
@@ -15,20 +12,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
     }
 
-    // Determine the path to the python project root
-    const projectRoot = path.join(process.cwd(), '..');
-    
-    // We execute the delivery step from the main project root
-    // This will spawn the Python process to run the MCP delivery pipeline
-    const command = `python -m src.main --step deliver --email "${email}"`;
-    
-    console.log(`Executing delivery command in: ${projectRoot}`);
-    
-    const { stdout, stderr } = await execPromise(command, { cwd: projectRoot });
-    
-    console.log("Delivery stdout:", stdout);
-    if (stderr) {
-      console.warn("Delivery stderr:", stderr);
+    const response = await fetch(`${API_URL}/api/deliver`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+      // Allow up to 2 minutes for delivery to complete
+      signal: AbortSignal.timeout(120_000),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || (data && data.success === false)) {
+      console.error("Backend delivery failed:", data);
+      return NextResponse.json({ 
+        error: 'Failed to trigger delivery pipeline',
+        details: data?.error || 'Unknown error'
+      }, { status: 500 });
     }
 
     return NextResponse.json({ 

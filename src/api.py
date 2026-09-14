@@ -32,6 +32,13 @@ class RefreshResponse(BaseModel):
     success: bool
     error: str | None = None
 
+class DeliverRequest(BaseModel):
+    email: str
+
+class DeliverResponse(BaseModel):
+    success: bool
+    error: str | None = None
+
 def _parse_front_matter(content: str) -> dict:
     """Parse YAML front-matter block from a pulse .md file."""
     match = re.match(r'^---\r?\n([\s\S]*?)\r?\n---\r?\n', content)
@@ -124,3 +131,19 @@ async def refresh_analysis():
         return RefreshResponse(success=True)
     except Exception as e:
         return RefreshResponse(success=False, error=str(e))
+
+@app.post("/api/deliver", response_model=DeliverResponse)
+async def deliver_pulse(req: DeliverRequest):
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            "python", "-m", "src.main", "--step", "deliver", "--email", req.email,
+            cwd=str(BASE_DIR),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        stdout, stderr = await proc.communicate()
+        if proc.returncode != 0:
+            return DeliverResponse(success=False, error=f"Deliver failed: {stderr.decode()}")
+        return DeliverResponse(success=True)
+    except Exception as e:
+        return DeliverResponse(success=False, error=str(e))
