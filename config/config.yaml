@@ -9,7 +9,7 @@ app:
 
 email:
   to: "n21jindal@gmail.com"
-  subject_prefix: "📊 Groww Weekly Pulse"
+  subject_prefix: "Groww Weekly Pulse"
 
 # Phase 3 — Analysis chains (Groq)
 groq:

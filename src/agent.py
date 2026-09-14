@@ -6,7 +6,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.prebuilt import create_react_agent
 from src.delivery.mcp_client import MCPLangChainWrapper
 
-async def run_delivery_agent(pulse_md: str, config: Dict[str, Any]):
+async def run_delivery_agent(pulse_md: str, config: Dict[str, Any], target_email: str = None):
     """
     Connects to the remote MCP server, gets delivery tools (Google Docs, Gmail),
     and executes the delivery tasks using an LLM agent.
@@ -18,7 +18,7 @@ async def run_delivery_agent(pulse_md: str, config: Dict[str, Any]):
     doc_id = mcp_config.get("document_id")
     
     email_config = config.get("email", {})
-    to_email = email_config.get("to")
+    to_email = target_email if target_email else email_config.get("to")
     subject = email_config.get("subject_prefix", "Groww Weekly Pulse")
     
     if not sse_url:
@@ -33,11 +33,13 @@ async def run_delivery_agent(pulse_md: str, config: Dict[str, Any]):
         tools = await wrapper.get_tools()
         print(f"Retrieved {len(tools)} tools from MCP server.")
         
-        # Use gemini-3.6-flash or whatever is configured for the generator
-        gemini_config = config.get("gemini", {})
-        model_name = gemini_config.get("model", "gemini-3.6-flash")
+        from langchain_groq import ChatGroq
         
-        llm = ChatGoogleGenerativeAI(
+        # Using Groq to bypass Gemini quota issues
+        groq_config = config.get("groq", {})
+        model_name = groq_config.get("model", "llama3-70b-8192")
+        
+        llm = ChatGroq(
             model=model_name,
             temperature=0.1
         )
@@ -47,7 +49,7 @@ async def run_delivery_agent(pulse_md: str, config: Dict[str, Any]):
 Please deliver the following Weekly Pulse report.
 
 Task 1: Append the report to the Google Document with ID: {doc_id}
-Task 2: Create a draft email to {to_email} with the subject "{subject}".
+Task 2: Send an email to {to_email} with the subject "{subject}".
 The body of the email should contain the pulse report AND a link to the Google Doc: https://docs.google.com/document/d/{doc_id}/edit
 
 Report Content:

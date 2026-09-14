@@ -67,12 +67,12 @@ class MCPLangChainWrapper:
                 async def tool_func(**kwargs) -> str:
                     try:
                         response = await self.session.call_tool(tool_name, arguments=kwargs)
-                        if response.isError:
+                        if getattr(response, "isError", False):
                             return f"Error: {response.content}"
                         result_text = []
                         for content in response.content:
-                            if content.type == "text":
-                                result_text.append(content.text)
+                            if getattr(content, "type", "") == "text" or hasattr(content, "text"):
+                                result_text.append(getattr(content, "text", str(content)))
                             else:
                                 result_text.append(str(content))
                         return "\n".join(result_text)

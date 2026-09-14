@@ -26,7 +26,7 @@ from src.analysis.prompts import (
 #   — saves ~1,200 tokens across 50-review batch
 # ---------------------------------------------------------------------------
 BATCH_SIZE = 50
-INTER_CALL_SLEEP = 10  # seconds — conservative TPM buffer
+INTER_CALL_SLEEP = 20  # seconds — conservative TPM buffer
 
 
 def _get_groq_llm() -> ChatGroq:
@@ -114,7 +114,7 @@ def analyze_themes(reviews: List[Review]) -> ClusteringResult:
             # Map short IDs → real UUIDs
             real_ids = [short_to_real[sid] for sid in short_ids if sid in short_to_real]
             name = t.get("theme_name", "Unknown")
-            count = t.get("count", len(real_ids))
+            count = len(real_ids)
 
             all_sub_themes.append(ThemeAssignment(
                 theme_name=name,
@@ -158,7 +158,7 @@ def analyze_themes(reviews: List[Review]) -> ClusteringResult:
         final_themes.append(ThemeAssignment(
             theme_name=merged_name,
             review_ids=deduped,
-            count=merged_count if merged_count > 0 else len(deduped),
+            count=len(deduped),
         ))
 
     if not final_themes:

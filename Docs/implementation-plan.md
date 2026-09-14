@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document breaks the Groww Review Agent into **6 implementation phases**, each producing a working, testable increment. Every phase has clear goals, files to create/modify, acceptance criteria, and estimated effort.
+This document breaks the Groww Review Agent into **7 implementation phases**, each producing a working, testable increment. Every phase has clear goals, files to create/modify, acceptance criteria, and estimated effort.
 
 ```mermaid
 gantt
@@ -27,6 +27,9 @@ gantt
 
     section Phase 6
     Automation & Scheduling            :p6, after p5, 1d
+
+    section Phase 7
+    Frontend Dashboard                 :p7, after p6, 2d
 ```
 
 ---
@@ -498,6 +501,37 @@ sequenceDiagram
 
 ---
 
+## Phase 7 — Frontend Dashboard
+
+> **Goal:** Build a high-quality frontend dashboard using React or Next.js to view the weekly pulse report (Top three themes, what users are saying, and action ideas) and share it via email.
+
+### Duration: ~2 days
+
+### Dependencies: Phase 4 complete
+
+### Tasks
+
+| # | Task | Files | Details |
+|---|---|---|---|
+| 7.1 | Initialize frontend project | `stitch_weekly_product_pulse_dashboard/` | Scaffold a React or Next.js project. Set up styling (e.g., Tailwind CSS). |
+| 7.2 | Design editorial dashboard UI | `stitch_weekly_product_pulse_dashboard/src/` | Implement a clean, warm-beige, editorial-style layout with serif headings. |
+| 7.3 | Build data fetching/integration | `stitch_weekly_product_pulse_dashboard/src/` | Fetch generated pulse data to populate themes, quotes, and ideas. |
+| 7.4 | Implement Email Sharing | `stitch_weekly_product_pulse_dashboard/src/` | Build a form to enter an email address and trigger the delivery pipeline. |
+
+### Files Created/Modified
+
+```
+[NEW]  stitch_weekly_product_pulse_dashboard/ (entire directory)
+```
+
+### Acceptance Criteria
+
+- [ ] A React/Next.js frontend runs successfully in `stitch_weekly_product_pulse_dashboard/`.
+- [ ] UI accurately reflects the pulse data (themes, quotes, actions).
+- [ ] Users can enter an email ID and trigger report sharing.
+
+---
+
 ## Phase Summary
 
 ```mermaid
@@ -507,6 +541,7 @@ flowchart LR
     P3 --> P4["Phase 4\nPulse\nGeneration\n(2 days)"]
     P4 --> P5["Phase 5\nMCP Delivery &\nIntegration\n(3 days)"]
     P5 --> P6["Phase 6\nAutomation &\nScheduling\n(1 day)"]
+    P6 --> P7["Phase 7\nFrontend\nDashboard\n(2 days)"]
 
     style P1 fill:#1e3a5f,stroke:#4a90d9,color:#fff
     style P2 fill:#1e3a5f,stroke:#4a90d9,color:#fff
@@ -514,6 +549,7 @@ flowchart LR
     style P4 fill:#1e3a5f,stroke:#4a90d9,color:#fff
     style P5 fill:#1e3a5f,stroke:#4a90d9,color:#fff
     style P6 fill:#1e3a5f,stroke:#4a90d9,color:#fff
+    style P7 fill:#1e3a5f,stroke:#4a90d9,color:#fff
 ```
 
 | Phase | Duration | Key Deliverable | Runnable Command |
@@ -524,7 +560,8 @@ flowchart LR
 | **Phase 4** | ~2 days | Polished pulse note (≤ 250 words) | `python -m src.main --dry-run` |
 | **Phase 5** | ~3 days | Full pipeline with Docs + Gmail delivery | `python -m src.main --step deliver` |
 | **Phase 6** | ~1 day | Automated weekly schedule via GitHub Actions | N/A |
-| **Total** | **~15 days** | | |
+| **Phase 7** | ~2 days | Frontend Dashboard | `npm run dev` |
+| **Total** | **~17 days** | | |
 
 ---
 
@@ -554,3 +591,4 @@ The project is **complete** when ALL of the following are true:
 - [ ] The project is documented with README.md setup instructions
 - [ ] Code is committed to Git with clean history
 - [ ] GitHub Action scheduler is configured to run weekly
+- [ ] Frontend dashboard is implemented in `stitch_weekly_product_pulse_dashboard` and runs locally

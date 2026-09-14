@@ -87,13 +87,22 @@ def load_reviews(weeks_ago: int = 12) -> List[Review]:
         except (json.JSONDecodeError, ValueError, KeyError):
             continue
             
+    # Sort by date descending so [:300] takes the most recent reviews instead of the oldest/randomly ordered
+    reviews.sort(key=lambda r: r.at, reverse=True)
     return reviews
 
-def save_pulse(pulse_md: str, date_str: str = None):
+def save_pulse(pulse_md: str, date_str: str = None, start_date: str = None, end_date: str = None, review_count: int = 0):
     pulses_dir = get_pulses_dir()
     if not date_str:
         date_str = datetime.datetime.now().strftime("%Y-%m-%d")
-    
+
+    # Build YAML front-matter so the dashboard can extract metadata without parsing the body
+    if start_date and end_date:
+        front_matter = f"---\nstart_date: {start_date}\nend_date: {end_date}\nreview_count: {review_count}\n---\n"
+    else:
+        front_matter = ""
+
     file_path = pulses_dir / f"{date_str}.md"
     with open(file_path, "w", encoding="utf-8") as f:
-        f.write(pulse_md)
+        f.write(front_matter + pulse_md)
+
