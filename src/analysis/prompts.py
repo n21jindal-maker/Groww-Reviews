@@ -32,7 +32,8 @@ Sub-themes:
 QUOTE_SELECTION_PROMPT = ChatPromptTemplate.from_template(
     """Theme: {theme_name}
 
-Pick the single most representative English verbatim quote from the reviews below.
+Pick the single most representative English verbatim quote from the reviews below that best illustrates this theme.
+Favor detailed, specific feedback over short generic comments (like "best app" or "please fix"). The quote should clearly reflect the specific context or reason behind the theme.
 Return ONLY the quote text — no quotes marks, no explanation.
 
 Reviews:
