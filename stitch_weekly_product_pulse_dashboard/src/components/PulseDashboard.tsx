@@ -251,20 +251,8 @@ export function PulseDashboard({
             </div>
           )}
 
-          <hr className="my-10 border-gray-100" />
-
           {/* Share Component */}
-          <div>
-            <h2 className="font-serif text-2xl italic text-gray-900 mb-2">
-              Share
-            </h2>
-            <p className="text-sm text-gray-500 mb-6">
-              Deliver the full pulse by email — same rich formatting as on this page.
-            </p>
-            <div className="bg-[#f7f5f0] rounded-xl p-6">
-              <Share />
-            </div>
-          </div>
+          <Share />
         </div>
       </div>
     </div>

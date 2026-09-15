@@ -40,10 +40,10 @@ export function Share() {
         Deliver the full pulse by email — same rich formatting as on this page.
       </p>
 
-      <form onSubmit={handleShare} className="bg-[#f0ebe1] rounded-2xl p-6">
+      <form onSubmit={handleShare} className="bg-[#f7f5f0] rounded-xl p-6">
         <label
           htmlFor="email"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-900 mb-2"
         >
           Email addresses
         </label>
@@ -53,13 +53,13 @@ export function Share() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="name@company.com"
-          className="w-full bg-transparent border-b border-gray-300 focus:border-[#b86b52] focus:ring-0 px-0 py-2 mb-6 text-gray-900 outline-none transition-colors"
+          className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 mb-6 text-gray-900 outline-none focus:border-[#24a485] focus:ring-1 focus:ring-[#24a485] transition-colors"
           required
         />
         <button
           type="submit"
           disabled={status === "sending"}
-          className="bg-[#b86b52] text-white px-6 py-2 rounded-full hover:bg-[#a05b45] transition-colors disabled:opacity-70 font-medium text-sm"
+          className="bg-[#24a485] text-white px-6 py-2.5 rounded-full hover:bg-[#1c836a] transition-colors disabled:opacity-70 font-medium text-sm"
         >
           {status === "idle" && "Send report"}
           {status === "sending" && "Sending..."}
