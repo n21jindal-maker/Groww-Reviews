@@ -24,7 +24,7 @@ function parseMarkdown(md: string): ParsedPulse {
   }
 
   // Parse Themes
-  const themesSection = md.match(/🔍 TOP THEMES\n([\s\S]*?)(?=\n\n💬|\n\n🎯|$)/);
+  const themesSection = md.match(/(?:###\s*)?🔍 (?:\*\*)?TOP THEMES(?:\*\*)?\n([\s\S]*?)(?=\n+(?:###\s*)?💬|\n+(?:###\s*)?🎯|$)/);
   let parsedThemes: { name: string; mentions: string }[] = [];
   if (themesSection) {
     const lines = themesSection[1].split('\n').filter(l => l.trim().length > 0);
@@ -41,7 +41,7 @@ function parseMarkdown(md: string): ParsedPulse {
   }
 
   // Parse Quotes
-  const quotesSection = md.match(/💬 WHAT USERS ARE SAYING\n([\s\S]*?)(?=\n\n🎯|$)/);
+  const quotesSection = md.match(/(?:###\s*)?💬 (?:\*\*)?WHAT USERS ARE SAYING(?:\*\*)?\n([\s\S]*?)(?=\n+(?:###\s*)?🎯|$)/);
   let parsedQuotes: string[] = [];
   if (quotesSection) {
     const lines = quotesSection[1].split('\n').filter(l => l.trim().length > 0);
@@ -59,7 +59,7 @@ function parseMarkdown(md: string): ParsedPulse {
   }));
 
   // Parse Actions
-  const actionsSection = md.match(/🎯 ACTION IDEAS\n([\s\S]*?)(?:\n\n|$)/);
+  const actionsSection = md.match(/(?:###\s*)?🎯 (?:\*\*)?ACTION IDEAS(?:\*\*)?\n([\s\S]*?)(?=\n+---|\n+📅|$)/);
   if (actionsSection) {
     const lines = actionsSection[1].split('\n').filter(l => l.trim().length > 0);
     result.actions = lines.map(line => {
